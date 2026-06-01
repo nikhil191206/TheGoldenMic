@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase-server";
 import { occupiedHours, hasConflict } from "@/lib/booking-utils";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
+    // Get user_id from server-side session (secure — not from request body)
+    const authClient = await createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    const userId = user?.id ?? null;
+
     const {
       name, gender, age, phone, email, people_count,
       singer_idol, booking_date, time_slot, duration, studio,
@@ -45,6 +51,7 @@ export async function POST(req: NextRequest) {
       booking_date, time_slot, duration, studio,
       txn_id: txn_id || null,
       txn_screenshot_url: txn_screenshot_url || null,
+      user_id: userId,
     });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

@@ -29,7 +29,8 @@ ALTER TABLE bookings
   ADD COLUMN IF NOT EXISTS email               TEXT,
   ADD COLUMN IF NOT EXISTS people_count        INTEGER,
   ADD COLUMN IF NOT EXISTS txn_id              TEXT,
-  ADD COLUMN IF NOT EXISTS txn_screenshot_url  TEXT;
+  ADD COLUMN IF NOT EXISTS txn_screenshot_url  TEXT,
+  ADD COLUMN IF NOT EXISTS user_id             UUID REFERENCES auth.users(id);
 
 -- 3. Storage bucket for payment screenshots
 --    (or create it manually in Supabase → Storage → New bucket → "txn-screenshots" → Public)
