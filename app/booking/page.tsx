@@ -192,10 +192,6 @@ export default function BookingPage() {
             <Field label="Age"><input required type="number" placeholder="Your age" min={1} max={120} value={form.age} onChange={e=>set("age",e.target.value)} style={IS}/></Field>
             <Field label="Phone Number"><input required type="tel" placeholder="+91 XXXXX XXXXX" value={form.phone} onChange={e=>set("phone",e.target.value)} style={IS}/></Field>
             <Field label="Email ID"><input required type="email" placeholder="your@email.com" value={form.email} onChange={e=>set("email",e.target.value)} style={IS}/></Field>
-            <Field label={`Number of People${form.booking_type ? ` (max ${maxPeople})` : ""}`}>
-              <input required type="number" placeholder="How many people?" min={1} max={maxPeople}
-                value={form.people_count} onChange={e=>set("people_count",e.target.value)} style={IS}/>
-            </Field>
             <Field label="Your Singer Idol"><input required type="text" placeholder="e.g. Arijit Singh, Taylor Swift…" value={form.singer_idol} onChange={e=>set("singer_idol",e.target.value)} style={IS}/></Field>
 
             {/* ── Booking Type ── */}
@@ -246,6 +242,19 @@ export default function BookingPage() {
                 </div>
               )}
             </div>
+
+            {/* Number of People — after booking type so max is known */}
+            <Field label={`Number of People${form.booking_type ? ` (max ${maxPeople})` : ""}`}>
+              <input required type="number" placeholder="How many people?" min={1} max={maxPeople}
+                value={form.people_count} onChange={e=>set("people_count",e.target.value)} style={IS}/>
+              {form.booking_type && (
+                <p style={{ fontFamily:"system-ui", fontSize:11, color:"oklch(0.50 0.03 75)", marginTop:5, letterSpacing:"0.04em" }}>
+                  {form.booking_type==="karaoke_singer" && "Base rate for 1 person · ₹100 extra per additional person"}
+                  {form.booking_type==="live_rehearsal" && "Max 3 participants · technical assistant included"}
+                  {form.booking_type==="mix_user" && "Up to 6 participants · Karaoke + instruments mix"}
+                </p>
+              )}
+            </Field>
 
             {/* Booking Date */}
             <Field label="Booking Date">

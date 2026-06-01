@@ -2,6 +2,7 @@ import HomeHero from "@/components/home-hero";
 import PhotoCarousel from "@/components/photo-carousel";
 import ContactSection from "@/components/contact-section";
 import NavAuth from "@/components/nav-auth";
+import PriceSheet from "@/components/price-sheet";
 
 export default function HomePage() {
   return (
@@ -9,7 +10,11 @@ export default function HomePage() {
       <NavAuth />
       <HomeHero />
 
-      <section className="py-24 px-6">
+      <div className="border-t border-border/20">
+        <PriceSheet />
+      </div>
+
+      <section className="py-24 px-6 border-t border-border/20">
         <PhotoCarousel />
       </section>
 
