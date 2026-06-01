@@ -7,6 +7,6 @@ const ThreeMic = dynamic(() => import("@/components/three-mic"), {
   loading: () => <></>,
 });
 
-export default function MicWrapper() {
-  return <ThreeMic />;
+export default function MicWrapper({ onLoaded }: { onLoaded?: () => void }) {
+  return <ThreeMic onLoaded={onLoaded} />;
 }

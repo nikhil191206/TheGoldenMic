@@ -57,12 +57,13 @@ function Mic() {
   );
 }
 
-export default function ThreeMic() {
+export default function ThreeMic({ onLoaded }: { onLoaded?: () => void }) {
   return (
     <Canvas
       gl={{ alpha: true, antialias: true }}
       camera={{ position: [0, 0, 4.2], fov: 42 }}
       style={{ background: "transparent" }}
+      onCreated={() => onLoaded?.()}
     >
       <ambientLight intensity={0.55} color="#FFE8A0" />
       <directionalLight position={[4, 6, 4]} intensity={5} color="#FFD060" />

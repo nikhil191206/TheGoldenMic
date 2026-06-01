@@ -224,7 +224,7 @@ export default function BookingPage() {
               value={form.booking_date}
               min={new Date().toISOString().split("T")[0]}
               onChange={(e) => set("booking_date", e.target.value)}
-              style={inputStyle}
+              style={{ ...inputStyle, colorScheme: "dark" }}
             />
           </div>
 
