@@ -4,8 +4,9 @@ const rows = [
     duration: "1 Hr",
     capacity: "1 – 5 Participants",
     charges: "₹300 / hr",
-    note: "+ ₹100 per extra person",
+    note: "+ ₹100 / extra person",
     bulk: false,
+    description: "Solo or Duet Singing on Karaoke track on full system, without technical assistant.",
   },
   {
     type: "Live Rehearsal",
@@ -14,6 +15,7 @@ const rows = [
     charges: "₹400 / hr",
     note: "Technical assistant included",
     bulk: false,
+    description: "Practice session in real-time with full system on a 4-mic combination of Singers & instrument players, supported by a technical assistant.",
   },
   {
     type: "Mix User",
@@ -22,6 +24,7 @@ const rows = [
     charges: "₹1,200",
     note: "Per session",
     bulk: false,
+    description: "A Karaoke group or small group of instrument players or a combination of both. Half Day or Full Day sessions only, without technical assistant.",
   },
   {
     type: "Mix User",
@@ -30,14 +33,16 @@ const rows = [
     charges: "₹2,400",
     note: "Per session",
     bulk: false,
+    description: null,
   },
   {
-    type: "Bulk · Karaoke",
+    type: "Bulk · Karaoke Singer",
     duration: "30 Hrs in 2 months",
     capacity: "Max 6 Participants",
     charges: "₹8,000",
     note: "11% discount · save ₹1,000",
     bulk: true,
+    description: "Pre-purchase 30 hours of Karaoke Singer sessions. Book any day within your 2-month window — no payment per session.",
   },
   {
     type: "Bulk · Live Rehearsal",
@@ -46,6 +51,7 @@ const rows = [
     charges: "₹10,600",
     note: "≈11% discount · save ₹1,400",
     bulk: true,
+    description: "Pre-purchase 30 hours of Live Rehearsal sessions. Book any day within your 2-month window — no payment per session.",
   },
 ];
 
@@ -63,92 +69,82 @@ export default function PriceSheet() {
           Transparent rates · No hidden charges
         </p>
 
-        {/* Desktop table */}
+        {/* ── Desktop table ── */}
         <div className="hidden sm:block overflow-hidden" style={{ border: "1px solid oklch(0.25 0.03 75)" }}>
           {/* Header */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "2fr 1.6fr 1.6fr 1.4fr",
+              gridTemplateColumns: "2.4fr 1.4fr 1.4fr 1.3fr",
               background: "oklch(0.13 0.02 75)",
               borderBottom: "1px solid oklch(0.30 0.05 85 / 0.5)",
             }}
           >
-            {["Session Type", "Duration", "Capacity", "Charges"].map((h) => (
-              <div
-                key={h}
-                style={{
-                  padding: "14px 18px",
-                  fontFamily: "system-ui, sans-serif",
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "oklch(0.75 0.15 85)",
-                }}
-              >
+            {["Session Type & Info", "Duration", "Capacity", "Charges"].map((h) => (
+              <div key={h} style={{ padding: "13px 18px", fontFamily: "system-ui, sans-serif",
+                fontSize: 11, fontWeight: 600, letterSpacing: "0.18em",
+                textTransform: "uppercase", color: "oklch(0.75 0.15 85)" }}>
                 {h}
               </div>
             ))}
           </div>
 
-          {/* Rows */}
           {rows.map((r, i) => (
-            <div
-              key={i}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "2fr 1.6fr 1.6fr 1.4fr",
-                borderBottom: i < rows.length - 1 ? "1px solid oklch(0.18 0.01 60)" : "none",
-                background: r.bulk
-                  ? "oklch(0.75 0.15 85 / 0.04)"
-                  : i % 2 === 0
-                  ? "transparent"
-                  : "oklch(0.10 0.01 60)",
-              }}
-            >
-              <div style={{ padding: "14px 18px" }}>
-                <p
-                  style={{
-                    fontFamily: "system-ui, sans-serif",
-                    fontSize: 14,
-                    fontWeight: r.bulk ? 600 : 400,
+            <div key={i} style={{
+              display: "grid",
+              gridTemplateColumns: "2.4fr 1.4fr 1.4fr 1.3fr",
+              borderBottom: i < rows.length - 1 ? "1px solid oklch(0.18 0.01 60)" : "none",
+              background: r.bulk
+                ? "oklch(0.75 0.15 85 / 0.04)"
+                : i % 2 === 0 ? "transparent" : "oklch(0.10 0.01 60)",
+            }}>
+              {/* Type + description */}
+              <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 5 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 14,
+                    fontWeight: r.bulk ? 600 : 500,
                     color: r.bulk ? "oklch(0.80 0.12 85)" : "oklch(0.88 0.02 85)",
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  {r.type}
-                </p>
-                {r.bulk && (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      marginTop: 4,
-                      padding: "2px 8px",
-                      fontSize: 10,
-                      fontFamily: "system-ui",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      color: "oklch(0.65 0.18 145)",
-                      border: "1px solid oklch(0.65 0.18 145 / 0.4)",
-                      background: "oklch(0.65 0.18 145 / 0.08)",
-                    }}
-                  >
-                    Bulk Plan
-                  </span>
+                    letterSpacing: "0.02em" }}>
+                    {r.type}
+                  </p>
+                  {r.bulk && (
+                    <span style={{ padding: "2px 7px", fontSize: 9, fontFamily: "system-ui",
+                      letterSpacing: "0.12em", textTransform: "uppercase",
+                      color: "oklch(0.65 0.18 145)", border: "1px solid oklch(0.65 0.18 145 / 0.4)",
+                      background: "oklch(0.65 0.18 145 / 0.08)", whiteSpace: "nowrap" }}>
+                      Bulk Plan
+                    </span>
+                  )}
+                </div>
+                {r.description && (
+                  <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 12,
+                    color: "oklch(0.52 0.02 75)", lineHeight: 1.55, letterSpacing: "0.02em" }}>
+                    {r.description}
+                  </p>
                 )}
               </div>
-              <div style={{ padding: "14px 18px", fontFamily: "system-ui, sans-serif", fontSize: 13, color: "oklch(0.68 0.02 75)", letterSpacing: "0.02em", display: "flex", alignItems: "center" }}>
+
+              {/* Duration */}
+              <div style={{ padding: "14px 18px", fontFamily: "system-ui, sans-serif",
+                fontSize: 13, color: "oklch(0.68 0.02 75)", display: "flex", alignItems: "flex-start", paddingTop: 16 }}>
                 {r.duration}
               </div>
-              <div style={{ padding: "14px 18px", fontFamily: "system-ui, sans-serif", fontSize: 13, color: "oklch(0.68 0.02 75)", display: "flex", alignItems: "center" }}>
+
+              {/* Capacity */}
+              <div style={{ padding: "14px 18px", fontFamily: "system-ui, sans-serif",
+                fontSize: 13, color: "oklch(0.68 0.02 75)", display: "flex", alignItems: "flex-start", paddingTop: 16 }}>
                 {r.capacity}
               </div>
-              <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 3 }}>
-                <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, fontWeight: 700, color: "oklch(0.75 0.15 85)", letterSpacing: "0.02em" }}>
+
+              {/* Charges */}
+              <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column",
+                justifyContent: "flex-start", gap: 4, paddingTop: 16 }}>
+                <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, fontWeight: 700,
+                  color: "oklch(0.75 0.15 85)", letterSpacing: "0.02em" }}>
                   {r.charges}
                 </p>
-                <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 11, color: "oklch(0.50 0.03 75)", letterSpacing: "0.04em" }}>
+                <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 11,
+                  color: r.bulk ? "oklch(0.60 0.12 145)" : "oklch(0.50 0.03 75)", letterSpacing: "0.03em" }}>
                   {r.note}
                 </p>
               </div>
@@ -156,48 +152,54 @@ export default function PriceSheet() {
           ))}
         </div>
 
-        {/* Mobile cards */}
+        {/* ── Mobile cards ── */}
         <div className="sm:hidden flex flex-col gap-3">
           {rows.map((r, i) => (
-            <div
-              key={i}
-              style={{
-                border: r.bulk ? "1px solid oklch(0.75 0.15 85 / 0.3)" : "1px solid oklch(0.22 0.02 75)",
-                background: r.bulk ? "oklch(0.75 0.15 85 / 0.04)" : "oklch(0.10 0.01 60)",
-                padding: "16px",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                <div>
-                  <p style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 600, color: r.bulk ? "oklch(0.80 0.12 85)" : "oklch(0.88 0.02 85)" }}>
-                    {r.type}
-                  </p>
-                  <p style={{ fontFamily: "system-ui", fontSize: 12, color: "oklch(0.55 0.02 75)", marginTop: 2 }}>
+            <div key={i} style={{
+              border: r.bulk ? "1px solid oklch(0.75 0.15 85 / 0.3)" : "1px solid oklch(0.22 0.02 75)",
+              background: r.bulk ? "oklch(0.75 0.15 85 / 0.04)" : "oklch(0.10 0.01 60)",
+              padding: "16px",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: r.description ? 10 : 0 }}>
+                <div style={{ flex: 1, paddingRight: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 2 }}>
+                    <p style={{ fontFamily: "system-ui", fontSize: 14, fontWeight: 600,
+                      color: r.bulk ? "oklch(0.80 0.12 85)" : "oklch(0.88 0.02 85)" }}>
+                      {r.type}
+                    </p>
+                    {r.bulk && (
+                      <span style={{ padding: "2px 7px", fontSize: 9, fontFamily: "system-ui",
+                        letterSpacing: "0.12em", textTransform: "uppercase",
+                        color: "oklch(0.65 0.18 145)", border: "1px solid oklch(0.65 0.18 145 / 0.4)",
+                        background: "oklch(0.65 0.18 145 / 0.08)" }}>
+                        Bulk
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ fontFamily: "system-ui", fontSize: 12, color: "oklch(0.50 0.02 75)" }}>
                     {r.duration} · {r.capacity}
                   </p>
                 </div>
-                <div style={{ textAlign: "right" }}>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
                   <p style={{ fontFamily: "system-ui", fontSize: 16, fontWeight: 700, color: "oklch(0.75 0.15 85)" }}>{r.charges}</p>
-                  <p style={{ fontFamily: "system-ui", fontSize: 10, color: "oklch(0.50 0.03 75)", marginTop: 2 }}>{r.note}</p>
+                  <p style={{ fontFamily: "system-ui", fontSize: 10, color: r.bulk ? "oklch(0.60 0.12 145)" : "oklch(0.50 0.03 75)", marginTop: 2 }}>{r.note}</p>
                 </div>
               </div>
-              {r.bulk && (
-                <span style={{ display: "inline-block", padding: "2px 8px", fontSize: 10, fontFamily: "system-ui", letterSpacing: "0.1em",
-                  textTransform: "uppercase", color: "oklch(0.65 0.18 145)", border: "1px solid oklch(0.65 0.18 145 / 0.4)", background: "oklch(0.65 0.18 145 / 0.08)" }}>
-                  Bulk Plan
-                </span>
+              {r.description && (
+                <p style={{ fontFamily: "system-ui", fontSize: 12, color: "oklch(0.50 0.02 75)",
+                  lineHeight: 1.55, borderTop: "1px solid oklch(0.18 0.01 60)", paddingTop: 10 }}>
+                  {r.description}
+                </p>
               )}
             </div>
           ))}
         </div>
 
-        <p
-          className="text-center mt-8"
-          style={{ fontFamily: "system-ui, sans-serif", fontSize: 12, color: "oklch(0.42 0.02 75)", letterSpacing: "0.06em" }}
-        >
-          Bulk plans include 11% discount on 30 hours pre-purchased over 2 months ·{" "}
+        <p className="text-center mt-8"
+          style={{ fontFamily: "system-ui, sans-serif", fontSize: 12, color: "oklch(0.42 0.02 75)", letterSpacing: "0.06em" }}>
+          Bulk plans include discount on 30 hours pre-purchased over 2 months ·{" "}
           <a href="/bulk-booking" style={{ color: "oklch(0.65 0.10 85)", textDecoration: "underline" }}>
-            View bulk plans
+            View bulk plans →
           </a>
         </p>
       </div>
