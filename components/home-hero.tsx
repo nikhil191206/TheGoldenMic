@@ -67,7 +67,7 @@ export default function HomeHero() {
           className="absolute z-0 pointer-events-none"
           style={
             isMobile
-              ? { inset: 0, overflow: "hidden" }
+              ? { top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%", overflow: "hidden" }
               : { right: 0, top: "50%", transform: "translateY(-50%)", width: "50%", height: "100vh", overflow: "hidden" }
           }
         >
