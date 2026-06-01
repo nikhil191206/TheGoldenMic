@@ -12,11 +12,10 @@ export default async function ProfilePage() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const { data: bookings } = await admin
-    .from("bookings")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("booking_date", { ascending: true });
+  const [{ data: bookings }, { data: bulkBookings }] = await Promise.all([
+    admin.from("bookings").select("*").eq("user_id", user.id).order("booking_date", { ascending: true }),
+    admin.from("bulk_bookings").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+  ]);
 
   const upcoming = (bookings ?? []).filter((b) => b.booking_date >= today);
   const past     = (bookings ?? []).filter((b) => b.booking_date < today).reverse();
@@ -70,6 +69,55 @@ export default async function ProfilePage() {
             + Book a Slot
           </Link>
         </div>
+
+        {/* Bulk booking plans */}
+        {(bulkBookings ?? []).length > 0 && (
+          <div style={{ marginBottom: 40 }}>
+            <p style={{ fontFamily: "system-ui", fontSize: 11, fontWeight: 600, letterSpacing: "0.2em",
+              textTransform: "uppercase", color: "oklch(0.65 0.12 85)", marginBottom: 16 }}>Bulk Plans</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {(bulkBookings ?? []).map((bb) => {
+                const typeLabel = bb.booking_type === "karaoke_singer" ? "Karaoke Singer" : "Live Rehearsal";
+                const remaining = bb.total_hours - bb.used_hours;
+                const pct = (remaining / bb.total_hours) * 100;
+                return (
+                  <a key={bb.id} href={`/bulk-booking/${bb.id}`}
+                    style={{ border: "1px solid oklch(0.28 0.03 75)", padding: "18px 20px", textDecoration: "none",
+                      display: "flex", flexDirection: "column", gap: 10, transition: "border-color 0.2s",
+                      background: "transparent" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <div>
+                        <p style={{ fontFamily: "system-ui", fontSize: 15, fontWeight: 600, color: "oklch(0.88 0.02 85)" }}>Bulk · {typeLabel}</p>
+                        <p style={{ fontFamily: "system-ui", fontSize: 12, color: "oklch(0.50 0.03 75)", marginTop: 3, letterSpacing: "0.04em" }}>
+                          {new Date(bb.start_date+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})} → {new Date(bb.end_date+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}
+                        </p>
+                      </div>
+                      <div style={{ padding: "4px 12px", fontFamily: "system-ui", fontSize: 11, letterSpacing: "0.12em",
+                        textTransform: "uppercase", border: bb.payment_complete ? "1px solid oklch(0.65 0.18 145 / 0.5)" : "1px solid oklch(0.65 0.15 85 / 0.5)",
+                        color: bb.payment_complete ? "oklch(0.65 0.18 145)" : "oklch(0.72 0.12 85)" }}>
+                        {bb.payment_complete ? "Active" : "Pending"}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "system-ui", fontSize: 12,
+                        color: "oklch(0.60 0.03 75)", marginBottom: 6 }}>
+                        <span>{remaining} hrs remaining</span><span>{bb.total_hours} hrs total</span>
+                      </div>
+                      <div style={{ height: 4, background: "oklch(0.20 0.02 60)", borderRadius: 2, overflow: "hidden" }}>
+                        <div style={{ height: "100%", background: "oklch(0.75 0.15 85)", borderRadius: 2, width: `${pct}%` }}/>
+                      </div>
+                    </div>
+                    {bb.payment_complete && (
+                      <p style={{ fontFamily: "system-ui", fontSize: 12, color: "oklch(0.65 0.10 85)", letterSpacing: "0.06em" }}>
+                        Click to book sessions →
+                      </p>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Upcoming bookings */}
         <BookingSection title="Upcoming" bookings={upcoming} empty="No upcoming bookings." accent />

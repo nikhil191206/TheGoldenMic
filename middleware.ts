@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isProtected = path.startsWith("/booking") || path.startsWith("/profile");
+  const isProtected = path.startsWith("/booking") || path.startsWith("/profile") || path.startsWith("/bulk-booking");
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
@@ -37,5 +37,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/booking/:path*", "/profile/:path*"],
+  matcher: ["/booking/:path*", "/profile/:path*", "/bulk-booking/:path*"],
 };
