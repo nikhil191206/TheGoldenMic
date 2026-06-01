@@ -54,12 +54,11 @@ export default function HomeHero() {
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
 
         {/* Sketchfab 3D mic
-            - overflow:hidden clips the ~48px branding bar at the top
-            - margin-top:-60px pushes it out of view
-            - All UI params disabled in the URL                          */}
+            Opacity is on the iframe itself (not the wrapper) so the
+            solid cover divs can fully mask the top + bottom UI bars   */}
         <div
           className="absolute right-0 top-1/2 -translate-y-1/2 z-0 pointer-events-none"
-          style={{ width: "50%", height: "100vh", overflow: "hidden", opacity: 0.5 }}
+          style={{ width: "50%", height: "100vh", overflow: "hidden", position: "absolute" }}
         >
           <iframe
             title="Vintage Golden Microphone"
@@ -70,10 +69,22 @@ export default function HomeHero() {
               marginTop: "-60px",
               border: "none",
               display: "block",
+              opacity: 0.5,
             }}
             allowFullScreen
             allow="autoplay; fullscreen; xr-spatial-tracking"
             src="https://sketchfab.com/models/89810b8eda1a4a208516af74f95ffb5f/embed?autospin=1&autostart=1&preload=1&transparent=1&ui_theme=dark&ui_hint=0&ui_controls=0&ui_infos=0&ui_stop=0&ui_inspector=0&ui_watermark_link=0&ui_watermark=0&ui_annotations=0&ui_loading=0"
+          />
+          {/* Covers the bottom controls bar (sketchfab ignores ui_controls=0 on free plans) */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 58,
+              background: "oklch(0.08 0.01 60)",
+            }}
           />
         </div>
 
