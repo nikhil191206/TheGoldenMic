@@ -100,23 +100,27 @@ export default function HomeHero() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center gap-8 px-6 text-center">
+        <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
           <h1
             className="text-gold-gradient font-light"
-            style={{ fontSize: "clamp(2.4rem, 8vw, 6rem)", letterSpacing: "0.12em", lineHeight: 1.1 }}
+            style={{
+              fontSize: "clamp(3.5rem, 14vw, 10rem)",
+              letterSpacing: "0.08em",
+              lineHeight: 1.05,
+            }}
           >
             The Golden Mic
           </h1>
           <p
-            className="text-muted-foreground font-light tracking-widest"
-            style={{ fontSize: "clamp(0.9rem, 2.5vw, 1.25rem)" }}
+            className="text-muted-foreground font-light tracking-[0.35em] uppercase"
+            style={{ fontSize: "clamp(0.7rem, 2vw, 1rem)" }}
           >
             Karaoke Studio
           </p>
           <Link
             href="/booking"
-            className="mt-2 border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 uppercase"
-            style={{ padding: "14px 36px", fontSize: "clamp(0.7rem, 2vw, 0.875rem)", letterSpacing: "0.2em" }}
+            className="mt-4 border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 uppercase"
+            style={{ padding: "14px 40px", fontSize: "clamp(0.65rem, 1.8vw, 0.8rem)", letterSpacing: "0.25em" }}
           >
             Book Your Slot
           </Link>
