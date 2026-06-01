@@ -96,7 +96,9 @@ export default function BookingPage() {
     setForm((f) => ({ ...f, duration: DURATION_STEPS[newIdx].value }));
   };
 
-  const isAvailable = (slot: string) => !hasConflict(slot, form.duration, takenHours);
+  // Slots are blacked out if no studio is selected yet, or if the hour is taken
+  const isAvailable = (slot: string) =>
+    !!form.studio && !hasConflict(slot, form.duration, takenHours);
 
   // ── Step 1 → Step 2 ──
   const handleNext = () => {
@@ -294,57 +296,7 @@ export default function BookingPage() {
                 style={{ ...inputStyle, colorScheme: "dark" }} />
             </Field>
 
-            {/* Start Time */}
-            <div className="space-y-3" ref={timePickerRef}>
-              <Label>Start Time</Label>
-              <button type="button" onClick={() => setTimePickerOpen((o) => !o)}
-                style={{ ...inputStyle, display: "flex", alignItems: "center", justifyContent: "space-between",
-                  cursor: "pointer", borderColor: timePickerOpen ? "oklch(0.75 0.15 85)" : undefined,
-                  color: form.time_slot ? "oklch(0.95 0.02 85)" : "oklch(0.55 0.03 85)" }}>
-                <span>{form.time_slot || "Select a time"}</span>
-                <svg style={{ width: 18, height: 18, opacity: 0.5, flexShrink: 0 }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
-                </svg>
-              </button>
-              {timePickerOpen && (
-                <div style={{ border: "1px solid oklch(0.75 0.15 85 / 0.35)", background: "oklch(0.12 0.01 60)",
-                  padding: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                  {TIME_SLOTS.map((t) => {
-                    const active = form.time_slot === t;
-                    const avail  = isAvailable(t);
-                    return (
-                      <button key={t} type="button" disabled={!avail}
-                        onClick={() => { if (avail) { set("time_slot", t); setTimePickerOpen(false); } }}
-                        title={!avail ? "Already booked" : undefined}
-                        style={{ padding: "12px 8px", fontFamily: "system-ui, sans-serif", fontSize: 15,
-                          letterSpacing: "0.04em", transition: "all 0.2s", cursor: avail ? "pointer" : "not-allowed",
-                          textDecoration: !avail ? "line-through" : "none",
-                          border: active ? "1px solid oklch(0.75 0.15 85)" : !avail ? "1px solid oklch(0.22 0.02 60)" : "1px solid oklch(0.3 0.03 75)",
-                          background: active ? "oklch(0.75 0.15 85 / 0.12)" : !avail ? "oklch(0.14 0.01 60)" : "transparent",
-                          color: active ? "oklch(0.75 0.15 85)" : !avail ? "oklch(0.35 0.02 60)" : "oklch(0.80 0.02 85)" }}>
-                        {t}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Duration stepper */}
-            <div className="space-y-3">
-              <Label>Duration</Label>
-              <div style={{ display: "flex", alignItems: "center", border: "1px solid oklch(0.3 0.03 75)", overflow: "hidden" }}>
-                <StepBtn onClick={() => stepDuration(-1)} disabled={durationIdx === 0}>−</StepBtn>
-                <span style={{ flex: 1, textAlign: "center", fontFamily: "system-ui, sans-serif",
-                  fontSize: "clamp(13px, 3.5vw, 16px)", letterSpacing: "0.04em", color: "oklch(0.92 0.04 85)",
-                  padding: "0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {DURATION_STEPS[durationIdx].label}
-                </span>
-                <StepBtn onClick={() => stepDuration(1)} disabled={durationIdx === DURATION_STEPS.length - 1} right>+</StepBtn>
-              </div>
-            </div>
-
-            {/* Studio */}
+            {/* Studio — placed here so time slots know which studio to check */}
             <div className="space-y-3">
               <Label>Select Studio</Label>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -371,6 +323,63 @@ export default function BookingPage() {
                     </label>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Start Time — slots are blacked out until studio is selected */}
+            <div className="space-y-3" ref={timePickerRef}>
+              <Label>Start Time</Label>
+              <button type="button" onClick={() => setTimePickerOpen((o) => !o)}
+                style={{ ...inputStyle, display: "flex", alignItems: "center", justifyContent: "space-between",
+                  cursor: "pointer", borderColor: timePickerOpen ? "oklch(0.75 0.15 85)" : undefined,
+                  color: form.time_slot ? "oklch(0.95 0.02 85)" : "oklch(0.55 0.03 85)" }}>
+                <span>{form.time_slot || "Select a time"}</span>
+                <svg style={{ width: 18, height: 18, opacity: 0.5, flexShrink: 0 }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+                </svg>
+              </button>
+              {timePickerOpen && (
+                <div style={{ border: "1px solid oklch(0.75 0.15 85 / 0.35)", background: "oklch(0.12 0.01 60)", padding: 12 }}>
+                  {!form.studio && (
+                    <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 12, color: "oklch(0.50 0.03 75)",
+                      letterSpacing: "0.06em", textAlign: "center", padding: "8px 0 12px" }}>
+                      Select a studio above to see available times
+                    </p>
+                  )}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    {TIME_SLOTS.map((t) => {
+                      const active = form.time_slot === t;
+                      const avail  = isAvailable(t);
+                      return (
+                        <button key={t} type="button" disabled={!avail}
+                          onClick={() => { if (avail) { set("time_slot", t); setTimePickerOpen(false); } }}
+                          title={!avail ? (form.studio ? "Already booked" : "Select a studio first") : undefined}
+                          style={{ padding: "12px 8px", fontFamily: "system-ui, sans-serif", fontSize: 15,
+                            letterSpacing: "0.04em", transition: "all 0.2s", cursor: avail ? "pointer" : "not-allowed",
+                            textDecoration: (form.studio && !avail) ? "line-through" : "none",
+                            border: active ? "1px solid oklch(0.75 0.15 85)" : !avail ? "1px solid oklch(0.22 0.02 60)" : "1px solid oklch(0.3 0.03 75)",
+                            background: active ? "oklch(0.75 0.15 85 / 0.12)" : !avail ? "oklch(0.14 0.01 60)" : "transparent",
+                            color: active ? "oklch(0.75 0.15 85)" : !avail ? "oklch(0.30 0.02 60)" : "oklch(0.80 0.02 85)" }}>
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Duration stepper */}
+            <div className="space-y-3">
+              <Label>Duration</Label>
+              <div style={{ display: "flex", alignItems: "center", border: "1px solid oklch(0.3 0.03 75)", overflow: "hidden" }}>
+                <StepBtn onClick={() => stepDuration(-1)} disabled={durationIdx === 0}>−</StepBtn>
+                <span style={{ flex: 1, textAlign: "center", fontFamily: "system-ui, sans-serif",
+                  fontSize: "clamp(13px, 3.5vw, 16px)", letterSpacing: "0.04em", color: "oklch(0.92 0.04 85)",
+                  padding: "0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {DURATION_STEPS[durationIdx].label}
+                </span>
+                <StepBtn onClick={() => stepDuration(1)} disabled={durationIdx === DURATION_STEPS.length - 1} right>+</StepBtn>
               </div>
             </div>
 
