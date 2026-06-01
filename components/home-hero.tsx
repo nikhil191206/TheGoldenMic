@@ -9,7 +9,7 @@ export default function HomeHero() {
   // Sketchfab iframe fires onLoad when its HTML loads;
   // add 1.2s to let the 3D model actually begin rendering before we reveal it.
   const handleLoad = () => {
-    setTimeout(() => setLoaded(true), 1200);
+    setTimeout(() => setLoaded(true), 4500);
   };
 
   return (
