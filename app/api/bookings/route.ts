@@ -1,16 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
-  if (!process.env.DATABASE_URL) {
-    return NextResponse.json(
-      { error: "DATABASE_URL is not set — add it in Vercel Environment Variables" },
-      { status: 500 }
-    );
-  }
-
   try {
     const { name, gender, age, singer_idol, booking_date, time_slot, duration, studio } =
       await req.json();
@@ -19,17 +12,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    await pool.query(
-      `INSERT INTO bookings (name, gender, age, singer_idol, booking_date, time_slot, duration, studio)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [name, gender, Number(age), singer_idol || null, booking_date, time_slot, duration, studio]
-    );
+    const { error } = await supabase.from("bookings").insert({
+      name,
+      gender,
+      age: Number(age),
+      singer_idol: singer_idol || null,
+      booking_date,
+      time_slot,
+      duration,
+      studio,
+    });
+
+    if (error) {
+      console.error("Supabase insert error:", error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("Booking insert error:", message);
-    // Return the real DB error so it's visible in the form
+    console.error("Booking error:", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
