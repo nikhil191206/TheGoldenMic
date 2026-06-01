@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { TIME_SLOT_HOURS, DURATION_SLOTS, hasConflict } from "@/lib/booking-utils";
 
 // 10:00 AM to 7:00 PM — 1-hour steps
 const TIME_SLOTS: string[] = (() => {
@@ -56,8 +57,25 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [takenHours, setTakenHours] = useState<number[]>([]);
 
   const timePickerRef = useRef<HTMLDivElement>(null);
+
+  // Fetch occupied hours whenever studio or date changes
+  useEffect(() => {
+    if (!form.studio || !form.booking_date) { setTakenHours([]); return; }
+    fetch(`/api/availability?studio=${encodeURIComponent(form.studio)}&date=${form.booking_date}`)
+      .then((r) => r.json())
+      .then((d) => setTakenHours(d.occupiedHours ?? []))
+      .catch(() => setTakenHours([]));
+  }, [form.studio, form.booking_date]);
+
+  // Clear selected slot if it becomes unavailable after refetch
+  useEffect(() => {
+    if (form.time_slot && hasConflict(form.time_slot, form.duration, takenHours)) {
+      setForm((f) => ({ ...f, time_slot: "" }));
+    }
+  }, [takenHours, form.duration]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -68,6 +86,9 @@ export default function BookingPage() {
     if (timePickerOpen) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [timePickerOpen]);
+
+  // Is a given time slot selectable for the current duration?
+  const isAvailable = (slot: string) => !hasConflict(slot, form.duration, takenHours);
 
   const set = (key: keyof FormData, value: string) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -271,12 +292,17 @@ export default function BookingPage() {
                 }}
               >
                 {TIME_SLOTS.map((t) => {
-                  const active = form.time_slot === t;
+                  const active    = form.time_slot === t;
+                  const available = isAvailable(t);
                   return (
                     <button
                       key={t}
                       type="button"
-                      onClick={() => { set("time_slot", t); setTimePickerOpen(false); }}
+                      disabled={!available}
+                      onClick={() => {
+                        if (available) { set("time_slot", t); setTimePickerOpen(false); }
+                      }}
+                      title={!available ? "Already booked" : undefined}
                       style={{
                         padding: "12px 8px",
                         fontFamily: "system-ui, sans-serif",
@@ -284,11 +310,22 @@ export default function BookingPage() {
                         letterSpacing: "0.04em",
                         border: active
                           ? "1px solid oklch(0.75 0.15 85)"
+                          : !available
+                          ? "1px solid oklch(0.22 0.02 60)"
                           : "1px solid oklch(0.3 0.03 75)",
-                        background: active ? "oklch(0.75 0.15 85 / 0.12)" : "transparent",
-                        color: active ? "oklch(0.75 0.15 85)" : "oklch(0.80 0.02 85)",
-                        cursor: "pointer",
+                        background: active
+                          ? "oklch(0.75 0.15 85 / 0.12)"
+                          : !available
+                          ? "oklch(0.14 0.01 60)"
+                          : "transparent",
+                        color: active
+                          ? "oklch(0.75 0.15 85)"
+                          : !available
+                          ? "oklch(0.35 0.02 60)"
+                          : "oklch(0.80 0.02 85)",
+                        cursor: available ? "pointer" : "not-allowed",
                         transition: "all 0.2s",
+                        textDecoration: !available ? "line-through" : "none",
                       }}
                     >
                       {t}
