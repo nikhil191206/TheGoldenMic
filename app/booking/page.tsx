@@ -129,7 +129,7 @@ export default function BookingPage() {
   return (
     <main className="min-h-screen w-full bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-border/30">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-border/30">
         <Link
           href="/"
           className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
@@ -140,15 +140,19 @@ export default function BookingPage() {
           </svg>
           Back
         </Link>
-        <span className="text-gold-gradient text-sm tracking-[0.2em] uppercase font-light">
+        <span
+          className="text-gold-gradient uppercase font-light"
+          style={{ fontSize: "clamp(0.65rem, 2.5vw, 0.875rem)", letterSpacing: "0.15em" }}
+        >
           The Golden Mic
         </span>
-        <div className="w-16" />
+        <div className="w-10 sm:w-16" />
       </div>
 
       {/* Form container */}
-      <div className="max-w-lg mx-auto px-6 py-14 pb-20">
-        <h1 className="text-gold-gradient text-4xl sm:text-5xl font-light tracking-[0.1em] text-center mb-2">
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-8 sm:py-14 pb-20">
+        <h1 className="text-gold-gradient font-light tracking-[0.1em] text-center mb-2"
+          style={{ fontSize: "clamp(2rem, 8vw, 3rem)" }}>
           Book Your Slot
         </h1>
         <p
@@ -333,10 +337,13 @@ export default function BookingPage() {
                   flex: 1,
                   textAlign: "center",
                   fontFamily: "system-ui, sans-serif",
-                  fontSize: "16px",
-                  letterSpacing: "0.06em",
+                  fontSize: "clamp(13px, 3.5vw, 16px)",
+                  letterSpacing: "0.04em",
                   color: "oklch(0.92 0.04 85)",
-                  padding: "0 8px",
+                  padding: "0 4px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
                 {DURATION_STEPS[durationIdx].label}
@@ -497,12 +504,12 @@ function Label({ children }: { children: React.ReactNode }) {
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  padding: "14px 16px",
+  padding: "12px 14px",
   background: "transparent",
   border: "1px solid oklch(0.3 0.03 75)",
   color: "oklch(0.93 0.02 85)",
   fontFamily: "system-ui, sans-serif",
-  fontSize: "16px",
+  fontSize: "16px",      // keep 16px to avoid iOS zoom-on-focus
   letterSpacing: "0.03em",
   outline: "none",
   transition: "border-color 0.2s",
