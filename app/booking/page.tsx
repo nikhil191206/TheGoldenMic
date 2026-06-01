@@ -26,8 +26,8 @@ const DURATION_STEPS = [
 const GENDERS = ["Male", "Female", "Prefer not to say"];
 
 const STUDIOS = [
-  { value: "Studio-1", name: "Studio 1", tag: "Mini" },
-  { value: "Studio-2", name: "Studio 2", tag: "Large" },
+  { value: "Studio-1", name: "Studio 1", tag: "Mini",  comingSoon: false },
+  { value: "Studio-2", name: "Studio 2", tag: "Large", comingSoon: true  },
 ];
 
 type FormData = {
@@ -415,7 +415,7 @@ export default function BookingPage() {
             <Label>Select Studio</Label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {STUDIOS.map((s) => {
-                const active = form.studio === s.value;
+                const active = form.studio === s.value && !s.comingSoon;
                 return (
                   <label
                     key={s.value}
@@ -425,13 +425,21 @@ export default function BookingPage() {
                       alignItems: "center",
                       justifyContent: "center",
                       padding: "24px 12px",
-                      border: active
+                      border: s.comingSoon
+                        ? "1px solid oklch(0.18 0.01 60)"
+                        : active
                         ? "2px solid oklch(0.75 0.15 85)"
                         : "1px solid oklch(0.3 0.03 75)",
-                      background: active ? "oklch(0.75 0.15 85 / 0.08)" : "transparent",
-                      cursor: "pointer",
+                      background: s.comingSoon
+                        ? "oklch(0.10 0.01 60)"
+                        : active
+                        ? "oklch(0.75 0.15 85 / 0.08)"
+                        : "transparent",
+                      cursor: s.comingSoon ? "not-allowed" : "pointer",
                       transition: "all 0.25s",
                       gap: 6,
+                      position: "relative",
+                      overflow: "hidden",
                     }}
                   >
                     <input
@@ -439,14 +447,15 @@ export default function BookingPage() {
                       name="studio"
                       value={s.value}
                       className="sr-only"
-                      onChange={() => set("studio", s.value)}
+                      disabled={s.comingSoon}
+                      onChange={() => !s.comingSoon && set("studio", s.value)}
                     />
                     <span
                       style={{
                         fontFamily: "system-ui, sans-serif",
                         fontSize: "17px",
                         fontWeight: 600,
-                        color: active ? "oklch(0.80 0.15 85)" : "oklch(0.88 0.02 85)",
+                        color: s.comingSoon ? "oklch(0.35 0.01 60)" : active ? "oklch(0.80 0.15 85)" : "oklch(0.88 0.02 85)",
                         letterSpacing: "0.04em",
                       }}
                     >
@@ -455,13 +464,13 @@ export default function BookingPage() {
                     <span
                       style={{
                         fontFamily: "system-ui, sans-serif",
-                        fontSize: "13px",
-                        color: active ? "oklch(0.70 0.12 85)" : "oklch(0.60 0.02 85)",
+                        fontSize: "12px",
+                        color: s.comingSoon ? "oklch(0.30 0.01 60)" : active ? "oklch(0.70 0.12 85)" : "oklch(0.60 0.02 85)",
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
                       }}
                     >
-                      {s.tag}
+                      {s.comingSoon ? "Coming Soon" : s.tag}
                     </span>
                   </label>
                 );
