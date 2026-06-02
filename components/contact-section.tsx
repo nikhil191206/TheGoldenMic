@@ -1,4 +1,88 @@
-import { Mail, Phone, MapPin, Instagram, Music2 } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
+
+export default function ContactSection() {
+  return (
+    <section className="py-24 px-6 border-t border-border/30">
+      <div className="max-w-2xl mx-auto text-center">
+        <h2 className="text-gold-gradient text-3xl sm:text-4xl font-light tracking-[0.1em] mb-16">
+          Get In Touch
+        </h2>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+          <a href="tel:+911234567890" style={linkStyle}>
+            <Phone style={iconStyle} />
+            <span style={textStyle}>+91 12345 67890</span>
+          </a>
+
+          <a href="mailto:thegoldenmic@gmail.com" style={linkStyle}>
+            <Mail style={iconStyle} />
+            <span style={textStyle}>thegoldenmic@gmail.com</span>
+          </a>
+
+          <div style={{ ...linkStyle, cursor: "default", alignItems: "flex-start" }}>
+            <MapPin style={{ ...iconStyle, marginTop: 2 }} />
+            <span style={{ ...textStyle, textAlign: "left", lineHeight: 1.7 }}>
+              401, Vidydhar Heights, 243 Narayan Peth,<br />
+              Laxmi Road, Pune – 411030
+            </span>
+          </div>
+        </div>
+
+        {/* Google Maps embed */}
+        <div
+          style={{
+            marginTop: 40,
+            border: "1px solid oklch(0.75 0.15 85 / 0.3)",
+            overflow: "hidden",
+            lineHeight: 0,
+          }}
+        >
+          <iframe
+            title="The Golden Mic – Location"
+            src="https://maps.google.com/maps?q=18.513739,73.845868&z=18&output=embed"
+            width="100%"
+            height="300"
+            style={{ border: 0, display: "block", filter: "invert(90%) hue-rotate(180deg)" }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
+        <a
+          href="https://maps.google.com/?q=18.513739,73.845868"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            marginTop: 12,
+            fontFamily: "system-ui, sans-serif",
+            fontSize: 12,
+            color: "oklch(0.65 0.10 85)",
+            letterSpacing: "0.06em",
+            textDecoration: "none",
+          }}
+        >
+          Open in Google Maps ↗
+        </a>
+
+        {/* Divider */}
+        <div style={{ width: 40, height: 1, background: "oklch(0.75 0.15 85 / 0.3)", margin: "48px auto" }} />
+
+        <p
+          style={{
+            fontFamily: "system-ui, sans-serif",
+            fontSize: 11,
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            color: "oklch(0.40 0.02 85)",
+          }}
+        >
+          © 2026 The Golden Mic Studio
+        </p>
+      </div>
+    </section>
+  );
+}
 
 const linkStyle: React.CSSProperties = {
   display: "flex",
@@ -22,47 +106,3 @@ const iconStyle: React.CSSProperties = {
   width: 22,
   height: 22,
 };
-
-export default function ContactSection() {
-  return (
-    <section className="py-24 px-6 border-t border-border/30">
-      <div className="max-w-2xl mx-auto text-center">
-        <h2 className="text-gold-gradient text-3xl sm:text-4xl font-light tracking-[0.1em] mb-16">
-          Get In Touch
-        </h2>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-          <a href="tel:+1234567890" style={linkStyle}>
-            <Phone style={iconStyle} />
-            <span style={textStyle}>+1 (234) 567-890</span>
-          </a>
-
-          <a href="mailto:hello@goldenmicstudio.com" style={linkStyle}>
-            <Mail style={iconStyle} />
-            <span style={textStyle}>hello@goldenmicstudio.com</span>
-          </a>
-
-          <div style={{ ...linkStyle, cursor: "default" }}>
-            <MapPin style={iconStyle} />
-            <span style={textStyle}>123 Music Lane, Downtown</span>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div style={{ width: 40, height: 1, background: "oklch(0.75 0.15 85 / 0.3)", margin: "48px auto" }} />
-
-        <p
-          style={{
-            fontFamily: "system-ui, sans-serif",
-            fontSize: 11,
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            color: "oklch(0.40 0.02 85)",
-          }}
-        >
-          © 2026 The Golden Mic Studio
-        </p>
-      </div>
-    </section>
-  );
-}
