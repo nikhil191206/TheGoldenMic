@@ -6,11 +6,11 @@ export const BOOKING_TYPES = [
   {
     value: "karaoke_singer",
     label: "Karaoke Singer",
-    sublabel: "Solo / Duet",
-    rate: "₹300/hr + ₹100/extra person",
-    maxPeople: 5,
+    sublabel: "Solo / Group",
+    rate: "₹300/hr (flat)",
+    maxPeople: 50,
     mixOnly: false,
-    info: "Solo or Duet Singing on Karaoke track on full system, without technical assistant.",
+    info: "Solo or Group Singing on Karaoke track on full system, without technical assistant.",
   },
   {
     value: "live_rehearsal",
@@ -46,13 +46,8 @@ export function calculatePrice(
   const people = Math.max(1, peopleCount || 1);
 
   if (bookingType === "karaoke_singer") {
-    const base = 300 * hours;
-    const extras = Math.max(0, people - 1);
-    const lines = [{ label: `Base · ₹300/hr × ${hours}hr`, amount: base }];
-    if (extras > 0) {
-      lines.push({ label: `${extras} extra person${extras > 1 ? "s" : ""} · ₹100/hr × ${hours}hr`, amount: extras * 100 * hours });
-    }
-    return { lines, total: lines.reduce((s, l) => s + l.amount, 0) };
+    const total = 300 * hours;
+    return { lines: [{ label: `₹300/hr × ${hours}hr (flat rate)`, amount: total }], total };
   }
 
   if (bookingType === "live_rehearsal") {

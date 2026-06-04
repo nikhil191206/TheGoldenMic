@@ -2,11 +2,11 @@ const rows = [
   {
     type: "Karaoke Singer",
     duration: "1 Hr",
-    capacity: "1 – 5 Participants",
+    capacity: "Any group size",
     charges: "₹300 / hr",
-    note: "+ ₹100 / extra person",
+    note: "Flat rate · no per-person charge",
     bulk: false,
-    description: "Solo or Duet Singing on Karaoke track on full system, without technical assistant.",
+    description: "Solo or Group Singing on Karaoke track on full system, without technical assistant. Fixed rate regardless of group size.",
   },
   {
     type: "Live Rehearsal",

@@ -249,7 +249,7 @@ export default function BookingPage() {
                 value={form.people_count} onChange={e=>set("people_count",e.target.value)} style={IS}/>
               {form.booking_type && (
                 <p style={{ fontFamily:"system-ui", fontSize:11, color:"oklch(0.50 0.03 75)", marginTop:5, letterSpacing:"0.04em" }}>
-                  {form.booking_type==="karaoke_singer" && "Base rate for 1 person · ₹100 extra per additional person"}
+                  {form.booking_type==="karaoke_singer" && "Flat ₹300/hr regardless of group size"}
                   {form.booking_type==="live_rehearsal" && "Max 3 participants · technical assistant included"}
                   {form.booking_type==="mix_user" && "Up to 6 participants · Karaoke + instruments mix"}
                 </p>

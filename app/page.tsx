@@ -10,7 +10,7 @@ export default function HomePage() {
       <NavAuth />
       <HomeHero />
 
-      <div className="border-t border-border/20">
+      <div id="pricing" className="border-t border-border/20">
         <PriceSheet />
       </div>
 

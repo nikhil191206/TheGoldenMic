@@ -125,6 +125,13 @@ export default function HomeHero() {
           >
             Book Your Slot
           </Link>
+          <button
+            onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}
+            className="text-muted-foreground hover:text-primary transition-colors uppercase"
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: "clamp(0.6rem, 1.6vw, 0.75rem)", letterSpacing: "0.2em", padding: "4px 0" }}
+          >
+            View Cost Sheet ↓
+          </button>
         </div>
       </section>
     </>
