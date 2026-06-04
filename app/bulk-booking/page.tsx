@@ -1,15 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { BULK_PLANS, fmt } from "@/lib/pricing";
 
 type Plan = (typeof BULK_PLANS)[number];
 
-export default function BulkBookingPage() {
+function BulkBookingForm() {
+  const searchParams = useSearchParams();
+  const planParam    = searchParams.get("plan") ?? "";
   const router = useRouter();
-  const [selected, setSelected] = useState<Plan | null>(null);
+  const [selected, setSelected] = useState<Plan | null>(
+    BULK_PLANS.find(p => p.value === planParam) ?? null
+  );
   const [form, setForm]         = useState({ name:"", phone:"", email:"", people_count:"", start_date:"" });
   const [txnId, setTxnId]       = useState("");
   const [txnFile, setTxnFile]   = useState<File | null>(null);
@@ -224,6 +229,10 @@ function GBtn({ children, onClick, disabled }: { children: React.ReactNode; onCl
     </button>
   );
 }
+export default function BulkBookingPage() {
+  return <Suspense><BulkBookingForm /></Suspense>;
+}
+
 const IS: React.CSSProperties = {
   width:"100%", padding:"12px 14px", background:"transparent",
   border:"1px solid oklch(0.3 0.03 75)", color:"oklch(0.93 0.02 85)",

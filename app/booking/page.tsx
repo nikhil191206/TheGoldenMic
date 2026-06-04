@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { hasConflict } from "@/lib/booking-utils";
 import { BOOKING_TYPES, DURATION_HOURS, calculatePrice, fmt } from "@/lib/pricing";
@@ -23,8 +24,8 @@ const ALL_DURATIONS = [
 ];
 
 const STUDIOS = [
-  { value: "Studio-1", name: "Studio 1", tag: "Mini",  comingSoon: false },
-  { value: "Studio-2", name: "Studio 2", tag: "Large", comingSoon: true  },
+  { value: "Studio-1", name: "Studio 1", tag: "",       comingSoon: false },
+  { value: "Studio-2", name: "Studio 2", tag: "Large",  comingSoon: true  },
 ];
 
 const GENDERS = ["Male", "Female", "Prefer not to say"];
@@ -35,14 +36,25 @@ type FormData = {
   booking_date: string; time_slot: string; duration: string; studio: string;
 };
 
+// Wrap in Suspense so useSearchParams works in App Router
 export default function BookingPage() {
+  return <Suspense><BookingForm /></Suspense>;
+}
+
+function BookingForm() {
+  const searchParams  = useSearchParams();
+  const typeParam     = searchParams.get("type") ?? "";
+  const validType     = BOOKING_TYPES.some(t => t.value === typeParam) ? typeParam : "";
+
   const [step, setStep]           = useState<1 | 2>(1);
   const [form, setForm]           = useState<FormData>({
     name: "", gender: "", age: "", phone: "", email: "", people_count: "",
-    singer_idol: "", booking_type: "", booking_date: "",
-    time_slot: "", duration: "1Hr", studio: "",
+    singer_idol: "", booking_type: validType, booking_date: "",
+    time_slot: "", duration: validType === "mix_user" ? "HalfDay" : "1Hr", studio: "",
   });
-  const [durationIdx, setDurationIdx]       = useState(0);
+  const [durationIdx, setDurationIdx] = useState(
+    validType === "mix_user" ? 0 : 0   // 0 = HalfDay in filtered, 0 = 1Hr in full list
+  );
   const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [takenHours, setTakenHours]         = useState<number[]>([]);
   const [error, setError]                   = useState("");
@@ -277,11 +289,15 @@ export default function BookingPage() {
                     }}>
                       <input type="radio" name="studio" value={s.value} className="sr-only" disabled={s.comingSoon} onChange={()=>!s.comingSoon&&set("studio",s.value)}/>
                       <span style={{ fontFamily:"system-ui", fontSize:17, fontWeight:600, letterSpacing:"0.04em",
+                        textAlign:"center",
                         color:s.comingSoon?"oklch(0.35 0.01 60)":active?"oklch(0.80 0.15 85)":"oklch(0.88 0.02 85)" }}>{s.name}</span>
-                      <span style={{ fontFamily:"system-ui", fontSize:12, letterSpacing:"0.1em", textTransform:"uppercase",
-                        color:s.comingSoon?"oklch(0.30 0.01 60)":active?"oklch(0.70 0.12 85)":"oklch(0.60 0.02 85)" }}>
-                        {s.comingSoon?"Coming Soon":s.tag}
-                      </span>
+                      {(s.comingSoon || s.tag) && (
+                        <span style={{ fontFamily:"system-ui", fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase",
+                          textAlign:"center",
+                          color:s.comingSoon?"oklch(0.30 0.01 60)":active?"oklch(0.70 0.12 85)":"oklch(0.55 0.02 85)" }}>
+                          {s.comingSoon ? "Coming Soon" : s.tag}
+                        </span>
+                      )}
                     </label>
                   );
                 })}

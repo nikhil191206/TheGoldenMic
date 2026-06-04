@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+
 const rows = [
   {
     type: "Karaoke Singer",
@@ -7,6 +11,7 @@ const rows = [
     note: "Flat rate · no per-person charge",
     bulk: false,
     description: "Solo or Group Singing on Karaoke track on full system, without technical assistant. Fixed rate regardless of group size.",
+    href: "/booking?type=karaoke_singer",
   },
   {
     type: "Live Rehearsal",
@@ -16,6 +21,7 @@ const rows = [
     note: "Technical assistant included",
     bulk: false,
     description: "Practice session in real-time with full system on a 4-mic combination of Singers & instrument players, supported by a technical assistant.",
+    href: "/booking?type=live_rehearsal",
   },
   {
     type: "Mix User",
@@ -25,6 +31,7 @@ const rows = [
     note: "Per session",
     bulk: false,
     description: "A Karaoke group or small group of instrument players or a combination of both. Half Day or Full Day sessions only, without technical assistant.",
+    href: "/booking?type=mix_user",
   },
   {
     type: "Mix User",
@@ -34,6 +41,7 @@ const rows = [
     note: "Per session",
     bulk: false,
     description: null,
+    href: "/booking?type=mix_user",
   },
   {
     type: "Bulk · Karaoke Singer",
@@ -43,6 +51,7 @@ const rows = [
     note: "11% discount · save ₹1,000",
     bulk: true,
     description: "Pre-purchase 30 hours of Karaoke Singer sessions. Book any day within your 2-month window — no payment per session.",
+    href: "/bulk-booking?plan=karaoke_singer",
   },
   {
     type: "Bulk · Live Rehearsal",
@@ -52,6 +61,7 @@ const rows = [
     note: "≈11% discount · save ₹1,400",
     bulk: true,
     description: "Pre-purchase 30 hours of Live Rehearsal sessions. Book any day within your 2-month window — no payment per session.",
+    href: "/bulk-booking?plan=live_rehearsal",
   },
 ];
 
@@ -90,14 +100,20 @@ export default function PriceSheet() {
           </div>
 
           {rows.map((r, i) => (
-            <div key={i} style={{
+            <Link key={i} href={r.href} style={{
               display: "grid",
               gridTemplateColumns: "2.4fr 1.4fr 1.4fr 1.3fr",
               borderBottom: i < rows.length - 1 ? "1px solid oklch(0.18 0.01 60)" : "none",
               background: r.bulk
                 ? "oklch(0.75 0.15 85 / 0.04)"
                 : i % 2 === 0 ? "transparent" : "oklch(0.10 0.01 60)",
-            }}>
+              textDecoration: "none",
+              cursor: "pointer",
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "oklch(0.75 0.15 85 / 0.07)"}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = r.bulk ? "oklch(0.75 0.15 85 / 0.04)" : i % 2 === 0 ? "transparent" : "oklch(0.10 0.01 60)"}
+            >
               {/* Type + description */}
               <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 5 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
@@ -148,17 +164,19 @@ export default function PriceSheet() {
                   {r.note}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         {/* ── Mobile cards ── */}
         <div className="sm:hidden flex flex-col gap-3">
           {rows.map((r, i) => (
-            <div key={i} style={{
+            <Link key={i} href={r.href} style={{
               border: r.bulk ? "1px solid oklch(0.75 0.15 85 / 0.3)" : "1px solid oklch(0.22 0.02 75)",
               background: r.bulk ? "oklch(0.75 0.15 85 / 0.04)" : "oklch(0.10 0.01 60)",
               padding: "16px",
+              display: "block",
+              textDecoration: "none",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: r.description ? 10 : 0 }}>
                 <div style={{ flex: 1, paddingRight: 12 }}>
@@ -191,7 +209,7 @@ export default function PriceSheet() {
                   {r.description}
                 </p>
               )}
-            </div>
+            </Link>
           ))}
         </div>
 
