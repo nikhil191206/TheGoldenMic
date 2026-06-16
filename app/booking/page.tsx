@@ -61,6 +61,8 @@ function BookingForm() {
   const [infoShown, setInfoShown]           = useState<string | null>(null);
   const [txnId, setTxnId]                   = useState("");
   const [txnFile, setTxnFile]               = useState<File | null>(null);
+  const [txnScreenshotUrl, setTxnScreenshotUrl] = useState("");
+  const [uploading, setUploading]           = useState(false);
   const [paymentError, setPaymentError]     = useState("");
   const [loading, setLoading]               = useState(false);
   const [success, setSuccess]               = useState(false);
@@ -126,16 +128,22 @@ function BookingForm() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleFileSelect = async (file: File) => {
+    setTxnFile(file);
+    setTxnScreenshotUrl("");
+    setUploading(true);
+    setPaymentError("");
+    const fd = new FormData(); fd.append("file", file);
+    const up = await fetch("/api/upload", { method: "POST", body: fd });
+    if (!up.ok) { setPaymentError((await up.json()).error ?? "Upload failed."); setUploading(false); return; }
+    setTxnScreenshotUrl((await up.json()).url);
+    setUploading(false);
+  };
+
   const handleConfirm = async () => {
     if (!txnId && !txnFile) { setPaymentError("Please enter a Transaction ID or upload a screenshot."); return; }
+    if (txnFile && uploading) { setPaymentError("Screenshot is still uploading, please wait a moment."); return; }
     setLoading(true); setPaymentError("");
-    let txnScreenshotUrl = "";
-    if (txnFile) {
-      const fd = new FormData(); fd.append("file", txnFile);
-      const up = await fetch("/api/upload", { method: "POST", body: fd });
-      if (!up.ok) { setPaymentError((await up.json()).error ?? "Upload failed."); setLoading(false); return; }
-      txnScreenshotUrl = (await up.json()).url;
-    }
     const pricing = calculatePrice(form.booking_type, form.duration, Number(form.people_count));
     const res = await fetch("/api/bookings", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -445,8 +453,10 @@ function BookingForm() {
               <label style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:"28px 16px",
                 border:txnFile?"1px solid oklch(0.75 0.15 85)":"1px dashed oklch(0.3 0.03 75)",
                 background:txnFile?"oklch(0.75 0.15 85 / 0.05)":"transparent", cursor:"pointer", transition:"all 0.25s" }}>
-                <input type="file" accept="image/*" className="sr-only" onChange={e=>setTxnFile(e.target.files?.[0]??null)}/>
-                {txnFile
+                <input type="file" accept="image/*" className="sr-only" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleFileSelect(f); }}/>
+                {uploading
+                  ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.65 0.10 85)" }}>Uploading…</span>
+                  : txnFile && txnScreenshotUrl
                   ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.75 0.15 85)" }}>✓ {txnFile.name}</span>
                   : <>
                       <svg style={{ width:28, height:28, color:"oklch(0.45 0.03 75)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -458,7 +468,9 @@ function BookingForm() {
             </div>
 
             {paymentError && <Err>{paymentError}</Err>}
-            <GBtn onClick={handleConfirm} disabled={loading} style={{ marginTop:8 }}>{loading?"Confirming…":"Confirm Booking"}</GBtn>
+            <GBtn onClick={handleConfirm} disabled={loading || uploading} style={{ marginTop:8 }}>
+              {loading ? "Confirming…" : uploading ? "Uploading screenshot…" : "Confirm Booking"}
+            </GBtn>
           </div>
         </div>
       )}
