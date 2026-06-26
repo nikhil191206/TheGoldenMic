@@ -44,6 +44,12 @@ export default function HomeHero() {
     setTimeout(() => setLoaded(true), 2500);
   };
 
+  /* ── Safety net: never get stuck on the loading screen if the 3D embed fails to load ── */
+  useEffect(() => {
+    const fallback = setTimeout(() => setLoaded(true), 6000);
+    return () => clearTimeout(fallback);
+  }, []);
+
   return (
     <>
       {/* Hidden audio element — loops the background music */}
@@ -81,7 +87,7 @@ export default function HomeHero() {
           100% { box-shadow: 0 0 0 0 oklch(0.75 0.15 85 / 0); }
         }
       `}</style>
-      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 90, display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 110, display: "flex", alignItems: "center", gap: 10 }}>
         {loaded && !soundOn && (
           <span style={{
             fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.08em",
