@@ -7,14 +7,14 @@ export default function GoldenGlow({ children, className }: {
 }) {
   return (
     <BorderGlow
-      className={className}
-      edgeSensitivity={35}
+      className={`golden-glow-btn ${className ?? ""}`}
+      edgeSensitivity={8}
       glowColor="45 70 65"
       backgroundColor="transparent"
       borderRadius={0}
-      glowRadius={14}
-      glowIntensity={0.9}
-      coneSpread={25}
+      glowRadius={3}
+      glowIntensity={1}
+      coneSpread={30}
       animated={false}
       colors={["#D4AF37", "#F5D27A", "#8B6210"]}
     >

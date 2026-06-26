@@ -235,9 +235,7 @@ function GBtn({ children, onClick, disabled }: { children: React.ReactNode; onCl
       <button type="button" onClick={onClick} disabled={disabled}
         style={{ width:"100%", padding:18, border:"1px solid oklch(0.75 0.15 85 / 0.5)", background:"transparent",
           color:"oklch(0.75 0.15 85)", fontFamily:"system-ui", fontSize:15, letterSpacing:"0.2em", textTransform:"uppercase",
-          cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1, transition:"all 0.4s" }}
-        onMouseEnter={e=>{if(!disabled){(e.currentTarget as HTMLButtonElement).style.background="oklch(0.75 0.15 85)";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.08 0.01 60)";}}}
-        onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="transparent";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.75 0.15 85)";}}>
+          cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1, transition:"all 0.4s" }}>
         {children}
       </button>
     </GoldenGlow>

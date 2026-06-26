@@ -165,7 +165,7 @@ export default function HomeHero() {
           </p>
           <GoldenGlow>
             <Link href="/booking"
-              className="mt-4 border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 uppercase"
+              className="mt-4 border border-primary/50 text-primary transition-all duration-500 uppercase"
               style={{ padding: "14px 40px", fontSize: "clamp(0.65rem, 1.8vw, 0.8rem)", letterSpacing: "0.25em", display: "inline-block" }}>
               Book Your Slot
             </Link>
