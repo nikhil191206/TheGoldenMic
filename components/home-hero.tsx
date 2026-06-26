@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import GoldenGlow from "@/components/golden-glow";
 import LiquidEther from "@/components/LiquidEther";
+import ShinyText from "@/components/ShinyText";
 
 export default function HomeHero() {
   const [loaded, setLoaded]       = useState(false);
@@ -82,10 +83,9 @@ export default function HomeHero() {
           />
         </div>
         <h1
-          className="text-gold-gradient"
           style={{ position: "relative", zIndex: 1, fontSize: "clamp(1.6rem, 5vw, 3.5rem)", fontWeight: 300, letterSpacing: "0.22em" }}
         >
-          The Golden Mic
+          <ShinyText text="The Golden Mic" color="#d4af37" shineColor="#fff6d8" speed={3} spread={120} />
         </h1>
         <p style={{ position: "relative", zIndex: 1, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.3em",
           textTransform: "uppercase", color: "oklch(0.45 0.04 85)" }}>
@@ -184,9 +184,9 @@ export default function HomeHero() {
 
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center gap-6 px-4 text-center">
-          <h1 className="text-gold-gradient font-light"
+          <h1 className="font-light"
             style={{ fontSize: "clamp(3.5rem, 14vw, 10rem)", letterSpacing: "0.08em", lineHeight: 1.05 }}>
-            The Golden Mic
+            <ShinyText text="The Golden Mic" color="#d4af37" shineColor="#fff6d8" speed={3} spread={120} />
           </h1>
           <p className="text-muted-foreground font-light tracking-[0.35em] uppercase"
             style={{ fontSize: "clamp(0.7rem, 2vw, 1rem)" }}>
