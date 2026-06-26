@@ -74,32 +74,51 @@ export default function HomeHero() {
       </div>
 
       {/* ── Persistent speaker toggle — bottom-right corner ── */}
-      <button
-        onClick={toggleSound}
-        aria-label={soundOn ? "Mute music" : "Play music"}
-        style={{
-          position: "fixed", bottom: 24, right: 24, zIndex: 90,
-          width: 46, height: 46, borderRadius: "50%",
-          background: "oklch(0.13 0.01 60 / 0.85)",
-          border: "1px solid oklch(0.75 0.15 85 / 0.35)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          cursor: "pointer", backdropFilter: "blur(6px)",
-          color: "oklch(0.75 0.15 85)", transition: "all 0.3s",
-        }}
-      >
-        {soundOn ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>
-          </svg>
-        ) : (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-            <line x1="23" y1="9" x2="17" y2="15"/>
-            <line x1="17" y1="9" x2="23" y2="15"/>
-          </svg>
+      <style>{`
+        @keyframes soundPulse {
+          0%   { box-shadow: 0 0 0 0 oklch(0.75 0.15 85 / 0.45); }
+          70%  { box-shadow: 0 0 0 12px oklch(0.75 0.15 85 / 0); }
+          100% { box-shadow: 0 0 0 0 oklch(0.75 0.15 85 / 0); }
+        }
+      `}</style>
+      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 90, display: "flex", alignItems: "center", gap: 10 }}>
+        {loaded && !soundOn && (
+          <span style={{
+            fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.08em",
+            color: "oklch(0.75 0.15 85)", background: "oklch(0.13 0.01 60 / 0.85)",
+            padding: "6px 10px", borderRadius: 6, border: "1px solid oklch(0.75 0.15 85 / 0.3)",
+            backdropFilter: "blur(6px)", whiteSpace: "nowrap",
+          }}>
+            Tap for sound
+          </span>
         )}
-      </button>
+        <button
+          onClick={toggleSound}
+          aria-label={soundOn ? "Mute music" : "Play music"}
+          style={{
+            width: 46, height: 46, borderRadius: "50%",
+            background: "oklch(0.13 0.01 60 / 0.85)",
+            border: "1px solid oklch(0.75 0.15 85 / 0.35)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", backdropFilter: "blur(6px)",
+            color: "oklch(0.75 0.15 85)", transition: "all 0.3s",
+            animation: !soundOn ? "soundPulse 2s infinite" : undefined,
+          }}
+        >
+          {soundOn ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <line x1="23" y1="9" x2="17" y2="15"/>
+              <line x1="17" y1="9" x2="23" y2="15"/>
+            </svg>
+          )}
+        </button>
+      </div>
 
       {/* ── Hero ── */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
