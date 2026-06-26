@@ -1,0 +1,14 @@
+.golden-glow-wrap {
+  display: block;
+}
+
+.golden-glow-wrap > * {
+  transition: box-shadow 0.3s ease;
+}
+
+.golden-glow-wrap:hover > * {
+  box-shadow:
+    inset 0 0 0 1px oklch(0.78 0.16 85 / 0.95),
+    inset 0 0 8px 0 oklch(0.78 0.16 85 / 0.45),
+    0 0 8px 0 oklch(0.78 0.16 85 / 0.4);
+}
