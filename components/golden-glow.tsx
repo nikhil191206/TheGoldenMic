@@ -12,7 +12,7 @@ export default function GoldenGlow({ children, className }: {
       glowColor="45 70 65"
       backgroundColor="transparent"
       borderRadius={0}
-      glowRadius={3}
+      glowRadius={0}
       glowIntensity={1}
       coneSpread={30}
       animated={false}

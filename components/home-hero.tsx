@@ -69,13 +69,25 @@ export default function HomeHero() {
           pointerEvents: loaded ? "none" : "all",
         }}
       >
+        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+          <LiquidEther
+            colors={["#D4AF37", "#F5D27A", "#8B6210"]}
+            resolution={0.4}
+            mouseForce={10}
+            cursorSize={70}
+            autoDemo
+            autoSpeed={0.3}
+            autoIntensity={1}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>
         <h1
           className="text-gold-gradient"
-          style={{ fontSize: "clamp(1.6rem, 5vw, 3.5rem)", fontWeight: 300, letterSpacing: "0.22em" }}
+          style={{ position: "relative", zIndex: 1, fontSize: "clamp(1.6rem, 5vw, 3.5rem)", fontWeight: 300, letterSpacing: "0.22em" }}
         >
           The Golden Mic
         </h1>
-        <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.3em",
+        <p style={{ position: "relative", zIndex: 1, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.3em",
           textTransform: "uppercase", color: "oklch(0.45 0.04 85)" }}>
           Loading…
         </p>
@@ -130,15 +142,15 @@ export default function HomeHero() {
 
       {/* ── Hero ── */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 z-0 pointer-events-none" style={{ opacity: 0.6 }}>
           <LiquidEther
             colors={["#D4AF37", "#F5D27A", "#8B6210"]}
             resolution={isMobile ? 0.3 : 0.5}
-            mouseForce={18}
-            cursorSize={110}
+            mouseForce={10}
+            cursorSize={70}
             autoDemo
-            autoSpeed={0.4}
-            autoIntensity={1.8}
+            autoSpeed={0.3}
+            autoIntensity={1}
             style={{ width: "100%", height: "100%" }}
           />
         </div>
@@ -154,7 +166,7 @@ export default function HomeHero() {
             title="Vintage Golden Microphone"
             onLoad={handleLoad}
             style={{
-              width: "100%", height: "calc(100% + 60px)", marginTop: "-60px",
+              width: "100%", height: "calc(100% + 100px)", marginTop: "-100px",
               border: "none", display: "block",
               opacity: isMobile ? 0.28 : 0.5,
               pointerEvents: "none",
@@ -163,7 +175,8 @@ export default function HomeHero() {
             allow="autoplay; fullscreen; xr-spatial-tracking"
             src="https://sketchfab.com/models/89810b8eda1a4a208516af74f95ffb5f/embed?autostart=1&autospin=1&ui_hint=0&transparent=1&ui_theme=dark&ui_controls=0"
           />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 44, background: "oklch(0.08 0.01 60)" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 28,
+            background: "linear-gradient(to bottom, transparent, oklch(0.08 0.01 60))" }} />
         </div>
 
         {/* Content */}
