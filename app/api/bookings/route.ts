@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const {
       name, gender, age, phone, email, people_count,
       singer_idol, booking_date, time_slot, duration, studio,
-      txn_id, txn_screenshot_url,
+      txn_id, txn_screenshot_url, amount_paid,
     } = await req.json();
 
     if (!name || !gender || !age || !phone || !email || !people_count ||
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       booking_date, time_slot, duration, studio,
       txn_id: txn_id || null,
       txn_screenshot_url: txn_screenshot_url || null,
+      amount_paid: amount_paid ? Number(amount_paid) : null,
       user_id: userId,
     });
 
