@@ -78,10 +78,11 @@ serve(async (req: Request) => {
       <p>— The Golden Mic Team</p>
     `
 
-    await Promise.allSettled([
+    // Fire SMS + email in background — don't block the response
+    EdgeRuntime.waitUntil(Promise.allSettled([
       sendSms(booking.phone, smsBody),
       sendEmail(booking.email, emailSubject, emailHtml)
-    ])
+    ]))
 
     return json({ success: true })
   } catch (err) {

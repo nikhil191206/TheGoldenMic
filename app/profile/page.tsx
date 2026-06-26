@@ -3,6 +3,7 @@ import { supabase as admin } from "@/lib/supabase";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import SignOutButton from "@/components/sign-out-button";
+import CancelBookingButton from "@/components/cancel-booking-button";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -120,7 +121,7 @@ export default async function ProfilePage() {
         )}
 
         {/* Upcoming bookings */}
-        <BookingSection title="Upcoming" bookings={upcoming} empty="No upcoming bookings." accent />
+        <BookingSection title="Upcoming" bookings={upcoming} empty="No upcoming bookings." accent allowCancel />
 
         {/* Past bookings */}
         <BookingSection title="Past Bookings" bookings={past} empty="No past bookings yet." />
@@ -137,11 +138,13 @@ type Booking = {
   studio: string;
   people_count: number;
   payment_complete: boolean;
+  payment_status: string | null;
+  amount_paid: number | null;
   txn_id: string | null;
 };
 
-function BookingSection({ title, bookings, empty, accent }: {
-  title: string; bookings: Booking[]; empty: string; accent?: boolean;
+function BookingSection({ title, bookings, empty, accent, allowCancel }: {
+  title: string; bookings: Booking[]; empty: string; accent?: boolean; allowCancel?: boolean;
 }) {
   return (
     <div style={{ marginBottom: 40 }}>
@@ -155,14 +158,14 @@ function BookingSection({ title, bookings, empty, accent }: {
           letterSpacing: "0.04em", padding: "24px 0" }}>{empty}</p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {bookings.map((b) => <BookingCard key={b.id} booking={b} dim={!accent} />)}
+          {bookings.map((b) => <BookingCard key={b.id} booking={b} dim={!accent} allowCancel={allowCancel} />)}
         </div>
       )}
     </div>
   );
 }
 
-function BookingCard({ booking: b, dim }: { booking: Booking; dim?: boolean }) {
+function BookingCard({ booking: b, dim, allowCancel }: { booking: Booking; dim?: boolean; allowCancel?: boolean }) {
   const date = new Date(b.booking_date + "T00:00:00").toLocaleDateString("en-IN", {
     weekday: "short", day: "numeric", month: "long", year: "numeric"
   });
@@ -170,37 +173,50 @@ function BookingCard({ booking: b, dim }: { booking: Booking; dim?: boolean }) {
     "1Hr": "1 Hour", "2Hr": "2 Hours", "3Hr": "3 Hours",
     "HalfDay": "Half Day (4.5 Hrs)", "FullDay": "Full Day (9 Hrs)"
   };
+  const isCancelled = b.payment_status === "cancelled";
+  const statusLabel = isCancelled ? "Cancelled" : b.payment_status === "rejected" ? "Rejected" : b.payment_complete ? "Confirmed" : "Pending";
+  const statusColor = isCancelled || b.payment_status === "rejected" ? "oklch(0.65 0.2 25)" : b.payment_complete ? "oklch(0.65 0.18 145)" : "oklch(0.72 0.12 85)";
 
   return (
     <div style={{
       border: `1px solid ${dim ? "oklch(0.18 0.01 60)" : "oklch(0.28 0.03 75)"}`,
       background: dim ? "oklch(0.09 0.01 60)" : "transparent",
       padding: "18px 20px", opacity: dim ? 0.65 : 1,
-      display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12,
-      flexWrap: "wrap",
+      display: "flex", flexDirection: "column", gap: 14,
     }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, fontWeight: 600,
-          color: "oklch(0.88 0.02 85)", letterSpacing: "0.02em" }}>{date}</p>
-        <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: "oklch(0.60 0.03 75)", letterSpacing: "0.04em" }}>
-          {b.time_slot} · {durationLabel[b.duration] ?? b.duration}
-        </p>
-        <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: "oklch(0.55 0.03 75)", letterSpacing: "0.04em" }}>
-          {b.studio} · {b.people_count} {b.people_count === 1 ? "person" : "people"}
-        </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, fontWeight: 600,
+            color: "oklch(0.88 0.02 85)", letterSpacing: "0.02em" }}>{date}</p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: "oklch(0.60 0.03 75)", letterSpacing: "0.04em" }}>
+            {b.time_slot} · {durationLabel[b.duration] ?? b.duration}
+          </p>
+          <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: "oklch(0.55 0.03 75)", letterSpacing: "0.04em" }}>
+            {b.studio} · {b.people_count} {b.people_count === 1 ? "person" : "people"}
+          </p>
+        </div>
+        <div style={{
+          padding: "4px 12px", fontSize: 11, fontFamily: "system-ui, sans-serif",
+          letterSpacing: "0.12em", textTransform: "uppercase",
+          border: `1px solid ${statusColor.replace(")", " / 0.5)")}`,
+          color: statusColor,
+          background: statusColor.replace(")", " / 0.07)"),
+          whiteSpace: "nowrap",
+        }}>
+          {statusLabel}
+        </div>
       </div>
-      <div style={{
-        padding: "4px 12px", fontSize: 11, fontFamily: "system-ui, sans-serif",
-        letterSpacing: "0.12em", textTransform: "uppercase",
-        border: b.payment_complete
-          ? "1px solid oklch(0.65 0.18 145 / 0.5)"
-          : "1px solid oklch(0.65 0.15 85 / 0.5)",
-        color: b.payment_complete ? "oklch(0.65 0.18 145)" : "oklch(0.72 0.12 85)",
-        background: b.payment_complete ? "oklch(0.65 0.18 145 / 0.07)" : "oklch(0.65 0.15 85 / 0.07)",
-        whiteSpace: "nowrap",
-      }}>
-        {b.payment_complete ? "Confirmed" : "Pending"}
-      </div>
+
+      {allowCancel && !isCancelled && b.payment_status !== "rejected" && (
+        <div>
+          <CancelBookingButton
+            bookingId={b.id}
+            bookingDate={b.booking_date}
+            timeSlot={b.time_slot}
+            amountPaid={b.amount_paid ?? 0}
+          />
+        </div>
+      )}
     </div>
   );
 }

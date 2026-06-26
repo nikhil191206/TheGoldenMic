@@ -9,14 +9,14 @@ export default function ContactSection() {
         </h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-          <a href="tel:+911234567890" style={linkStyle}>
+          <a href="tel:+919422789659" style={linkStyle}>
             <Phone style={iconStyle} />
-            <span style={textStyle}>+91 12345 67890</span>
+            <span style={textStyle}>+91 94227 89659</span>
           </a>
 
-          <a href="mailto:thegoldenmic@gmail.com" style={linkStyle}>
+          <a href="mailto:thegoldenmicpune@gmail.com" style={linkStyle}>
             <Mail style={iconStyle} />
-            <span style={textStyle}>thegoldenmic@gmail.com</span>
+            <span style={textStyle}>thegoldenmicpune@gmail.com</span>
           </a>
 
           <div style={{ ...linkStyle, cursor: "default", alignItems: "flex-start" }}>

@@ -57,8 +57,8 @@ const localBusinessSchema = {
   description:
     "Premium karaoke and live rehearsal studio in Pune offering solo, duet, group and bulk sessions.",
   url: SITE_URL,
-  telephone: "+91-12345-67890",
-  email: "thegoldenmic@gmail.com",
+  telephone: "+91-94227-89659",
+  email: "thegoldenmicpune@gmail.com",
   address: {
     "@type": "PostalAddress",
     streetAddress: "401, Vidydhar Heights, 243 Narayan Peth, Laxmi Road",
