@@ -18,6 +18,8 @@ function BulkBookingForm() {
   const [form, setForm]         = useState({ name:"", phone:"", email:"", people_count:"", start_date:"" });
   const [txnId, setTxnId]       = useState("");
   const [txnFile, setTxnFile]   = useState<File | null>(null);
+  const [txnScreenshotUrl, setTxnScreenshotUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [success, setSuccess]   = useState(false);
@@ -31,21 +33,26 @@ function BulkBookingForm() {
     return d.toISOString().split("T")[0];
   };
 
+  const handleFileSelect = async (file: File) => {
+    setTxnFile(file);
+    setTxnScreenshotUrl("");
+    setUploading(true);
+    setError("");
+    const fd = new FormData(); fd.append("file", file);
+    const up = await fetch("/api/upload", { method: "POST", body: fd });
+    if (!up.ok) { setError((await up.json()).error ?? "Upload failed."); setUploading(false); return; }
+    setTxnScreenshotUrl((await up.json()).url);
+    setUploading(false);
+  };
+
   const handleSubmit = async () => {
     if (!selected) return;
     if (!form.name || !form.phone || !form.email || !form.people_count || !form.start_date) {
       setError("Please fill all fields."); return;
     }
     if (!txnId && !txnFile) { setError("Please enter a Transaction ID or upload a screenshot."); return; }
+    if (txnFile && uploading) { setError("Screenshot is still uploading, please wait a moment."); return; }
     setLoading(true); setError("");
-
-    let txnScreenshotUrl = "";
-    if (txnFile) {
-      const fd = new FormData(); fd.append("file", txnFile);
-      const up = await fetch("/api/upload", { method:"POST", body:fd });
-      if (!up.ok) { setError((await up.json()).error ?? "Upload failed."); setLoading(false); return; }
-      txnScreenshotUrl = (await up.json()).url;
-    }
 
     const res = await fetch("/api/bulk-bookings", {
       method: "POST", headers: { "Content-Type":"application/json" },
@@ -195,15 +202,19 @@ function BulkBookingForm() {
               <label style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, padding:"24px 16px", marginTop:8,
                 border:txnFile?"1px solid oklch(0.75 0.15 85)":"1px dashed oklch(0.3 0.03 75)",
                 background:txnFile?"oklch(0.75 0.15 85 / 0.05)":"transparent", cursor:"pointer", transition:"all 0.25s" }}>
-                <input type="file" accept="image/*" className="sr-only" onChange={e=>setTxnFile(e.target.files?.[0]??null)}/>
-                {txnFile
+                <input type="file" accept="image/*" className="sr-only" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleFileSelect(f); }}/>
+                {uploading
+                  ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.65 0.10 85)" }}>Uploading…</span>
+                  : txnFile && txnScreenshotUrl
                   ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.75 0.15 85)" }}>✓ {txnFile.name}</span>
                   : <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.55 0.03 75)" }}>Upload payment screenshot</span>}
               </label>
             </div>
 
             {error && <p style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.65 0.2 25)", textAlign:"center" }}>{error}</p>}
-            <GBtn onClick={handleSubmit} disabled={loading}>{loading?"Confirming…":"Confirm Bulk Purchase"}</GBtn>
+            <GBtn onClick={handleSubmit} disabled={loading || uploading}>
+              {loading ? "Confirming…" : uploading ? "Uploading screenshot…" : "Confirm Bulk Purchase"}
+            </GBtn>
           </div>
         )}
       </div>

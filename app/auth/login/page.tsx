@@ -78,8 +78,11 @@ function LoginForm() {
 
           <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 11, color: "oklch(0.40 0.02 75)",
             textAlign: "center", letterSpacing: "0.04em", lineHeight: 1.6 }}>
-            By signing in you agree to our terms. Your Google account
-            info is used only for authentication.
+            By signing in you agree to our{" "}
+            <Link href="/terms" style={{ color: "oklch(0.60 0.10 85)", textDecoration: "underline" }}>Terms</Link>{" "}
+            and{" "}
+            <Link href="/privacy" style={{ color: "oklch(0.60 0.10 85)", textDecoration: "underline" }}>Privacy Policy</Link>.
+            Your Google account info is used only for authentication.
           </p>
         </div>
 
