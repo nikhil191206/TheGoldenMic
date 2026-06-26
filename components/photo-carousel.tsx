@@ -4,20 +4,12 @@ import { useState, useEffect } from "react";
 
 const images = [
   {
-    url: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=600&fit=crop",
-    alt: "Karaoke performance"
+    url: "/studio/studio-1.jpeg",
+    alt: "The Golden Mic Studio entrance signage"
   },
   {
-    url: "https://images.unsplash.com/photo-1598387993441-a364f854c3e1?w=800&h=600&fit=crop",
-    alt: "Vintage microphone setup"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop",
-    alt: "Live music atmosphere"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800&h=600&fit=crop",
-    alt: "Stage performance"
+    url: "/studio/studio-2.png",
+    alt: "Live session inside The Golden Mic Studio"
   },
 ];
 
