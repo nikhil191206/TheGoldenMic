@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import GoldenGlow from "@/components/golden-glow";
 
 export default function HomeHero() {
   const [loaded, setLoaded]       = useState(false);
@@ -162,11 +163,13 @@ export default function HomeHero() {
             style={{ fontSize: "clamp(0.7rem, 2vw, 1rem)" }}>
             Karaoke Studio
           </p>
-          <Link href="/booking"
-            className="mt-4 border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 uppercase"
-            style={{ padding: "14px 40px", fontSize: "clamp(0.65rem, 1.8vw, 0.8rem)", letterSpacing: "0.25em" }}>
-            Book Your Slot
-          </Link>
+          <GoldenGlow>
+            <Link href="/booking"
+              className="mt-4 border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 uppercase"
+              style={{ padding: "14px 40px", fontSize: "clamp(0.65rem, 1.8vw, 0.8rem)", letterSpacing: "0.25em", display: "inline-block" }}>
+              Book Your Slot
+            </Link>
+          </GoldenGlow>
           <button
             onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}
             className="text-muted-foreground hover:text-primary transition-colors uppercase"

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
+import GoldenGlow from "@/components/golden-glow";
 
 const FUNCTIONS_URL = process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL as string;
 
@@ -96,30 +97,34 @@ export default function CancelBookingButton({
               </p>
             )}
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <button
-                onClick={handleCancel}
-                disabled={loading}
-                style={{
-                  flex: 1, padding: "12px 16px", border: "1px solid oklch(0.65 0.18 25 / 0.6)",
-                  background: "transparent", color: "oklch(0.70 0.18 25)",
-                  fontFamily: "system-ui", fontSize: 13, letterSpacing: "0.08em",
-                  textTransform: "uppercase", cursor: loading ? "not-allowed" : "pointer",
-                }}
-              >
-                {loading ? "Cancelling…" : "Yes, Cancel"}
-              </button>
-              <button
-                onClick={() => setOpen(false)}
-                disabled={loading}
-                style={{
-                  flex: 1, padding: "12px 16px", border: "1px solid oklch(0.3 0.03 75)",
-                  background: "transparent", color: "oklch(0.65 0.03 85)",
-                  fontFamily: "system-ui", fontSize: 13, letterSpacing: "0.08em",
-                  textTransform: "uppercase", cursor: loading ? "not-allowed" : "pointer",
-                }}
-              >
-                Keep Booking
-              </button>
+              <GoldenGlow className="flex-1">
+                <button
+                  onClick={handleCancel}
+                  disabled={loading}
+                  style={{
+                    width: "100%", padding: "12px 16px", border: "1px solid oklch(0.65 0.18 25 / 0.6)",
+                    background: "transparent", color: "oklch(0.70 0.18 25)",
+                    fontFamily: "system-ui", fontSize: 13, letterSpacing: "0.08em",
+                    textTransform: "uppercase", cursor: loading ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {loading ? "Cancelling…" : "Yes, Cancel"}
+                </button>
+              </GoldenGlow>
+              <GoldenGlow className="flex-1">
+                <button
+                  onClick={() => setOpen(false)}
+                  disabled={loading}
+                  style={{
+                    width: "100%", padding: "12px 16px", border: "1px solid oklch(0.3 0.03 75)",
+                    background: "transparent", color: "oklch(0.65 0.03 85)",
+                    fontFamily: "system-ui", fontSize: 13, letterSpacing: "0.08em",
+                    textTransform: "uppercase", cursor: loading ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Keep Booking
+                </button>
+              </GoldenGlow>
             </div>
           </div>
         </div>

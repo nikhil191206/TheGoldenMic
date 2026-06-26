@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { hasConflict } from "@/lib/booking-utils";
 import { BOOKING_TYPES, DURATION_HOURS, calculatePrice, fmt } from "@/lib/pricing";
+import GoldenGlow from "@/components/golden-glow";
 
 const TIME_SLOTS = (() => {
   const slots: string[] = [];
@@ -501,14 +502,16 @@ function SBtn({ children, onClick, disabled, right }: { children: React.ReactNod
 }
 function GBtn({ children, onClick, disabled, style }: { children:React.ReactNode; onClick?:()=>void; disabled?:boolean; style?:React.CSSProperties }) {
   return (
-    <button type="button" onClick={onClick} disabled={disabled}
-      style={{ width:"100%", padding:18, border:"1px solid oklch(0.75 0.15 85 / 0.5)", background:"transparent",
-        color:"oklch(0.75 0.15 85)", fontFamily:"system-ui", fontSize:15, letterSpacing:"0.2em", textTransform:"uppercase",
-        cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1, transition:"all 0.4s", ...style }}
-      onMouseEnter={e=>{ if(!disabled){(e.currentTarget as HTMLButtonElement).style.background="oklch(0.75 0.15 85)";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.08 0.01 60)";}}}
-      onMouseLeave={e=>{ (e.currentTarget as HTMLButtonElement).style.background="transparent";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.75 0.15 85)"; }}>
-      {children}
-    </button>
+    <GoldenGlow>
+      <button type="button" onClick={onClick} disabled={disabled}
+        style={{ width:"100%", padding:18, border:"1px solid oklch(0.75 0.15 85 / 0.5)", background:"transparent",
+          color:"oklch(0.75 0.15 85)", fontFamily:"system-ui", fontSize:15, letterSpacing:"0.2em", textTransform:"uppercase",
+          cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1, transition:"all 0.4s", ...style }}
+        onMouseEnter={e=>{ if(!disabled){(e.currentTarget as HTMLButtonElement).style.background="oklch(0.75 0.15 85)";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.08 0.01 60)";}}}
+        onMouseLeave={e=>{ (e.currentTarget as HTMLButtonElement).style.background="transparent";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.75 0.15 85)"; }}>
+        {children}
+      </button>
+    </GoldenGlow>
   );
 }
 function chip(active: boolean): React.CSSProperties {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { BULK_PLANS, fmt } from "@/lib/pricing";
+import GoldenGlow from "@/components/golden-glow";
 
 type Plan = (typeof BULK_PLANS)[number];
 
@@ -230,14 +231,16 @@ function F({ label, children }: { label: string; children: React.ReactNode }) {
 }
 function GBtn({ children, onClick, disabled }: { children: React.ReactNode; onClick?:()=>void; disabled?:boolean }) {
   return (
-    <button type="button" onClick={onClick} disabled={disabled}
-      style={{ width:"100%", padding:18, border:"1px solid oklch(0.75 0.15 85 / 0.5)", background:"transparent",
-        color:"oklch(0.75 0.15 85)", fontFamily:"system-ui", fontSize:15, letterSpacing:"0.2em", textTransform:"uppercase",
-        cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1, transition:"all 0.4s" }}
-      onMouseEnter={e=>{if(!disabled){(e.currentTarget as HTMLButtonElement).style.background="oklch(0.75 0.15 85)";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.08 0.01 60)";}}}
-      onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="transparent";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.75 0.15 85)";}}>
-      {children}
-    </button>
+    <GoldenGlow>
+      <button type="button" onClick={onClick} disabled={disabled}
+        style={{ width:"100%", padding:18, border:"1px solid oklch(0.75 0.15 85 / 0.5)", background:"transparent",
+          color:"oklch(0.75 0.15 85)", fontFamily:"system-ui", fontSize:15, letterSpacing:"0.2em", textTransform:"uppercase",
+          cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1, transition:"all 0.4s" }}
+        onMouseEnter={e=>{if(!disabled){(e.currentTarget as HTMLButtonElement).style.background="oklch(0.75 0.15 85)";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.08 0.01 60)";}}}
+        onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="transparent";(e.currentTarget as HTMLButtonElement).style.color="oklch(0.75 0.15 85)";}}>
+        {children}
+      </button>
+    </GoldenGlow>
   );
 }
 export default function BulkBookingPage() {

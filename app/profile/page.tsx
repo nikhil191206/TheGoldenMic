@@ -5,6 +5,7 @@ import Link from "next/link";
 import SignOutButton from "@/components/sign-out-button";
 import CancelBookingButton from "@/components/cancel-booking-button";
 import CancelBulkBookingButton from "@/components/cancel-bulk-booking-button";
+import GoldenGlow from "@/components/golden-glow";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -64,12 +65,14 @@ export default async function ProfilePage() {
             <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: "oklch(0.50 0.03 75)",
               letterSpacing: "0.04em", marginTop: 4 }}>{user.email}</p>
           </div>
-          <Link href="/booking"
-            style={{ marginTop: 4, padding: "11px 28px", border: "1px solid oklch(0.75 0.15 85 / 0.5)",
-              color: "oklch(0.75 0.15 85)", fontFamily: "system-ui, sans-serif", fontSize: 13,
-              letterSpacing: "0.15em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.3s" }}>
-            + Book a Slot
-          </Link>
+          <GoldenGlow>
+            <Link href="/booking"
+              style={{ display: "inline-block", marginTop: 4, padding: "11px 28px", border: "1px solid oklch(0.75 0.15 85 / 0.5)",
+                color: "oklch(0.75 0.15 85)", fontFamily: "system-ui, sans-serif", fontSize: 13,
+                letterSpacing: "0.15em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.3s" }}>
+              + Book a Slot
+            </Link>
+          </GoldenGlow>
         </div>
 
         {/* Bulk booking plans */}
