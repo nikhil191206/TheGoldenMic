@@ -177,6 +177,9 @@ export default function HomeHero() {
           />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 28,
             background: "linear-gradient(to bottom, transparent, oklch(0.08 0.01 60))" }} />
+          {/* Mask the Sketchfab logo/branding badge (bottom-left, fixed by their embed, can't be disabled via URL params) */}
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 64, height: 64,
+            background: "oklch(0.08 0.01 60)" }} />
         </div>
 
         {/* Content */}
