@@ -5,9 +5,12 @@
 
 /* Buttons are far smaller than the card this component was designed for —
    the default blur radii (up to 50px) wash out the whole face instead of
-   tracing a thin edge. Override with a crisp, tight outline instead. */
+   tracing a thin edge. Disable both fill layers entirely and keep only the
+   outer edge-light ring below. */
+.golden-glow-btn::before,
 .golden-glow-btn::after {
   opacity: 0 !important;
+  background: none !important;
 }
 
 .golden-glow-btn > .edge-light::before {
