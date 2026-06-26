@@ -166,7 +166,7 @@ export default function HomeHero() {
             title="Vintage Golden Microphone"
             onLoad={handleLoad}
             style={{
-              width: "100%", height: "calc(100% + 100px)", marginTop: "-100px",
+              width: "100%", height: "calc(100% + 50px)", marginTop: "-50px",
               border: "none", display: "block",
               opacity: isMobile ? 0.28 : 0.5,
               pointerEvents: "none",
@@ -175,10 +175,10 @@ export default function HomeHero() {
             allow="autoplay; fullscreen; xr-spatial-tracking"
             src="https://sketchfab.com/models/89810b8eda1a4a208516af74f95ffb5f/embed?autostart=1&autospin=1&ui_hint=0&transparent=1&ui_theme=dark&ui_controls=0"
           />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 28,
-            background: "linear-gradient(to bottom, transparent, oklch(0.08 0.01 60))" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 60,
+            background: "linear-gradient(to bottom, transparent, oklch(0.08 0.01 60) 65%)" }} />
           {/* Mask the Sketchfab logo/branding badge (bottom-left, fixed by their embed, can't be disabled via URL params) */}
-          <div style={{ position: "absolute", bottom: 0, left: 0, width: 64, height: 64,
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 70, height: 70,
             background: "oklch(0.08 0.01 60)" }} />
         </div>
 
