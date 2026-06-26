@@ -34,7 +34,7 @@ export default function PhotoCarousel() {
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === current ? "opacity-100" : "opacity-0"
+              index === current ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
           >
             <img
