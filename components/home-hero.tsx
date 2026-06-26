@@ -62,7 +62,7 @@ export default function HomeHero() {
       <div
         style={{
           position: "fixed", inset: 0, zIndex: 100,
-          background: "oklch(0.08 0.01 60 / 0.55)",
+          background: "oklch(0.08 0.01 60)",
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20,
           transition: "opacity 1s ease",
           opacity: loaded ? 0 : 1,
