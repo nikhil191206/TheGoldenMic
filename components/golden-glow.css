@@ -1,14 +1,28 @@
 .golden-glow-wrap {
+  position: relative;
   display: block;
 }
 
-.golden-glow-wrap > * {
-  transition: box-shadow 0.3s ease;
-}
-
-.golden-glow-wrap:hover > * {
+.golden-glow-ring {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
   box-shadow:
     inset 0 0 0 1px oklch(0.78 0.16 85 / 0.95),
-    inset 0 0 8px 0 oklch(0.78 0.16 85 / 0.45),
-    0 0 8px 0 oklch(0.78 0.16 85 / 0.4);
+    inset 0 0 6px 0 oklch(0.78 0.16 85 / 0.5),
+    0 0 6px 0 oklch(0.78 0.16 85 / 0.4);
+  mask-image: conic-gradient(
+    from var(--glow-angle, 0deg) at center,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 10%,
+    rgba(0, 0, 0, 0.15) 30%,
+    rgba(0, 0, 0, 0.15) 70%,
+    rgba(0, 0, 0, 1) 90%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+.golden-glow-wrap:hover .golden-glow-ring {
+  opacity: 1;
 }
