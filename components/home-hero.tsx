@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import GoldenGlow from "@/components/golden-glow";
+import LiquidEther from "@/components/LiquidEther";
 
 export default function HomeHero() {
   const [loaded, setLoaded]       = useState(false);
@@ -61,7 +62,7 @@ export default function HomeHero() {
       <div
         style={{
           position: "fixed", inset: 0, zIndex: 100,
-          background: "oklch(0.08 0.01 60)",
+          background: "oklch(0.08 0.01 60 / 0.55)",
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20,
           transition: "opacity 1s ease",
           opacity: loaded ? 0 : 1,
@@ -129,6 +130,18 @@ export default function HomeHero() {
 
       {/* ── Hero ── */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <LiquidEther
+            colors={["#D4AF37", "#F5D27A", "#8B6210"]}
+            resolution={isMobile ? 0.3 : 0.5}
+            mouseForce={18}
+            cursorSize={110}
+            autoDemo
+            autoSpeed={0.4}
+            autoIntensity={1.8}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>
         <div
           className="absolute z-0 pointer-events-none"
           style={
