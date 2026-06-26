@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin } from "lucide-react";
+import Link from "next/link";
 
 export default function ContactSection() {
   return (
@@ -65,8 +66,22 @@ export default function ContactSection() {
           Open in Google Maps ↗
         </a>
 
+        {/* Legal links */}
+        <div style={{ display: "flex", justifyContent: "center", gap: 20, flexWrap: "wrap", marginTop: 32 }}>
+          {[
+            ["Terms & Conditions", "/terms"],
+            ["Privacy Policy", "/privacy"],
+            ["Refund Policy", "/refund-policy"],
+          ].map(([label, href]) => (
+            <Link key={href} href={href} style={{
+              fontFamily: "system-ui, sans-serif", fontSize: 12, letterSpacing: "0.08em",
+              color: "oklch(0.50 0.03 75)", textDecoration: "none",
+            }}>{label}</Link>
+          ))}
+        </div>
+
         {/* Divider */}
-        <div style={{ width: 40, height: 1, background: "oklch(0.75 0.15 85 / 0.3)", margin: "48px auto" }} />
+        <div style={{ width: 40, height: 1, background: "oklch(0.75 0.15 85 / 0.3)", margin: "32px auto" }} />
 
         <p
           style={{
