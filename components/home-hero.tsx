@@ -7,7 +7,6 @@ export default function HomeHero() {
   const [loaded, setLoaded]       = useState(false);
   const [isMobile, setIsMobile]   = useState(false);
   const [soundOn, setSoundOn]     = useState(false);   // user has enabled sound
-  const [blocked, setBlocked]     = useState(false);   // autoplay was blocked
   const audioRef                  = useRef<HTMLAudioElement>(null);
 
   /* ── Viewport detection ── */
@@ -25,41 +24,20 @@ export default function HomeHero() {
     audio.volume = 0.6;
     audio.play()
       .then(() => setSoundOn(true))
-      .catch(() => setBlocked(true)); // browser blocked autoplay — show button
+      .catch(() => setSoundOn(false)); // browser blocked autoplay — button still lets user start it
   }, []);
 
-  /* ── Fade out + stop on any click after site is revealed ── */
-  useEffect(() => {
-    if (!loaded) return;
-    const fade = () => {
-      const audio = audioRef.current;
-      if (!audio || audio.paused) return;
-      const step = () => {
-        if (!audioRef.current) return;
-        if (audioRef.current.volume > 0.05) {
-          audioRef.current.volume = Math.max(0, audioRef.current.volume - 0.05);
-          setTimeout(step, 60);
-        } else {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
-          setSoundOn(false);
-        }
-      };
-      step();
-    };
-    document.addEventListener("click", fade, { once: true });
-    return () => document.removeEventListener("click", fade);
-  }, [loaded]);
-
-  /* ── Manual start (when autoplay is blocked) ── */
-  const enableSound = () => {
+  /* ── Toggle play / pause via the speaker button ── */
+  const toggleSound = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = 0.6;
-    audio.play().then(() => {
-      setSoundOn(true);
-      setBlocked(false);
-    });
+    if (audio.paused) {
+      audio.volume = 0.6;
+      audio.play().then(() => setSoundOn(true));
+    } else {
+      audio.pause();
+      setSoundOn(false);
+    }
   };
 
   const handleLoad = () => {
@@ -93,51 +71,35 @@ export default function HomeHero() {
           textTransform: "uppercase", color: "oklch(0.45 0.04 85)" }}>
           Loading…
         </p>
-
-        {/* Sound button — shown only when autoplay was blocked */}
-        {blocked && (
-          <button
-            onClick={enableSound}
-            style={{
-              marginTop: 16, background: "none", cursor: "pointer",
-              border: "1px solid oklch(0.75 0.15 85 / 0.35)",
-              padding: "10px 20px", display: "flex", alignItems: "center", gap: 10,
-              color: "oklch(0.75 0.15 85)", fontFamily: "system-ui, sans-serif",
-              fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", transition: "all 0.3s",
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
-            </svg>
-            Play Music
-          </button>
-        )}
-
-        {/* Mute toggle — shown when music is playing */}
-        {soundOn && !blocked && (
-          <button
-            onClick={() => {
-              const a = audioRef.current;
-              if (!a) return;
-              if (a.paused) { a.volume = 0.6; a.play(); setSoundOn(true); }
-              else { a.pause(); setSoundOn(false); }
-            }}
-            style={{
-              marginTop: 16, background: "none", cursor: "pointer", border: "none",
-              color: "oklch(0.55 0.05 85)", fontFamily: "system-ui, sans-serif",
-              fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase",
-              display: "flex", alignItems: "center", gap: 8,
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-            </svg>
-            Mute
-          </button>
-        )}
       </div>
+
+      {/* ── Persistent speaker toggle — bottom-right corner ── */}
+      <button
+        onClick={toggleSound}
+        aria-label={soundOn ? "Mute music" : "Play music"}
+        style={{
+          position: "fixed", bottom: 24, right: 24, zIndex: 90,
+          width: 46, height: 46, borderRadius: "50%",
+          background: "oklch(0.13 0.01 60 / 0.85)",
+          border: "1px solid oklch(0.75 0.15 85 / 0.35)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer", backdropFilter: "blur(6px)",
+          color: "oklch(0.75 0.15 85)", transition: "all 0.3s",
+        }}
+      >
+        {soundOn ? (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+        ) : (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <line x1="23" y1="9" x2="17" y2="15"/>
+            <line x1="17" y1="9" x2="23" y2="15"/>
+          </svg>
+        )}
+      </button>
 
       {/* ── Hero ── */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
