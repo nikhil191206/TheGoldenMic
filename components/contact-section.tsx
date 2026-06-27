@@ -40,7 +40,7 @@ export default function ContactSection() {
         >
           <iframe
             title="The Golden Mic – Location"
-            src="https://maps.google.com/maps?q=18.513739,73.845868&z=18&output=embed"
+            src="https://maps.google.com/maps?q=18.513641,73.845489&z=18&output=embed"
             width="100%"
             height="300"
             style={{ border: 0, display: "block", filter: "invert(90%) hue-rotate(180deg)" }}
@@ -50,7 +50,7 @@ export default function ContactSection() {
           />
         </div>
         <a
-          href="https://maps.google.com/?q=18.513739,73.845868"
+          href="https://maps.google.com/?q=18.513641,73.845489"
           target="_blank"
           rel="noopener noreferrer"
           style={{
