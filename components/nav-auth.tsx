@@ -10,7 +10,10 @@ export default function NavAuth() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    // getSession() reads the locally-stored session without forcing its own
+    // refresh — middleware already keeps the session fresh on every
+    // navigation, so duplicating that here just races it (see middleware.ts).
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
     });

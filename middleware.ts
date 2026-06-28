@@ -36,6 +36,13 @@ export async function middleware(request: NextRequest) {
   return supabaseResponse;
 }
 
+// Run on every page (not just the protected ones) so Supabase's session
+// refresh happens consistently via middleware on every navigation. Without
+// this, a near-expiry token only gets refreshed when the user happens to hit
+// a protected route, which can race with a separate client-side refresh
+// (e.g. NavAuth's getUser() call) firing at the same time — Supabase's
+// refresh-token rotation invalidates whichever request loses that race,
+// which is what caused "I'm logged in but Book a Slot sends me to login".
 export const config = {
-  matcher: ["/booking/:path*", "/profile/:path*", "/bulk-booking/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mpeg)$).*)"],
 };
