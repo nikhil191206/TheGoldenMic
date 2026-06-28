@@ -34,7 +34,23 @@ export const BOOKING_TYPES = [
 
 export interface PriceBreakdown {
   lines: { label: string; amount: number }[];
+  subtotal: number;
+  fee: number;
   total: number;
+}
+
+// Razorpay's processing fee, passed on to the customer per the published
+// Terms & Refund Policy — non-refundable, charged on top of the base price.
+export const TRANSACTION_FEE_RATE = 0.02;
+
+function withFee(lines: { label: string; amount: number }[], subtotal: number): PriceBreakdown {
+  const fee = Math.round(subtotal * TRANSACTION_FEE_RATE);
+  return {
+    lines: [...lines, { label: "Payment processing fee (2%)", amount: fee }],
+    subtotal,
+    fee,
+    total: subtotal + fee,
+  };
 }
 
 export function calculatePrice(
@@ -46,25 +62,31 @@ export function calculatePrice(
   const people = Math.max(1, peopleCount || 1);
 
   if (bookingType === "karaoke_singer") {
-    const total = 300 * hours;
-    return { lines: [{ label: `₹300/hr × ${hours}hr (flat rate)`, amount: total }], total };
+    const subtotal = 300 * hours;
+    return withFee([{ label: `₹300/hr × ${hours}hr (flat rate)`, amount: subtotal }], subtotal);
   }
 
   if (bookingType === "live_rehearsal") {
-    const total = 400 * hours;
-    return { lines: [{ label: `₹400/hr × ${hours}hr`, amount: total }], total };
+    const subtotal = 400 * hours;
+    return withFee([{ label: `₹400/hr × ${hours}hr`, amount: subtotal }], subtotal);
   }
 
   if (bookingType === "mix_user") {
-    const total = duration === "HalfDay" ? 1200 : 2400;
-    return { lines: [{ label: duration === "HalfDay" ? "Half Day session (4.5 hrs)" : "Full Day session (9 hrs)", amount: total }], total };
+    const subtotal = duration === "HalfDay" ? 1200 : 2400;
+    return withFee([{ label: duration === "HalfDay" ? "Half Day session (4.5 hrs)" : "Full Day session (9 hrs)", amount: subtotal }], subtotal);
   }
 
-  return { lines: [], total: 0 };
+  return { lines: [], subtotal: 0, fee: 0, total: 0 };
 }
 
 export function fmt(n: number) {
   return `₹${n.toLocaleString("en-IN")}`;
+}
+
+// For flat-priced flows (bulk plans) that don't go through calculatePrice.
+export function applyTransactionFee(subtotal: number): { fee: number; total: number } {
+  const fee = Math.round(subtotal * TRANSACTION_FEE_RATE);
+  return { fee, total: subtotal + fee };
 }
 
 export const BULK_PLANS = [

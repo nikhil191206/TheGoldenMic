@@ -44,7 +44,9 @@ serve(async (req: Request) => {
 
     const refundPercentage = hoursUntilSlot >= 24 ? 80 : 50
     const amountPaid = booking.amount_paid ?? 0
-    const refundAmount = Math.round((amountPaid * refundPercentage) / 100)
+    // amount_paid includes the non-refundable 2% transaction fee — refund off the base only
+    const refundableBase = Math.round(amountPaid / 1.02)
+    const refundAmount = Math.round((refundableBase * refundPercentage) / 100)
 
     await supabase.from('bookings').update({
       payment_status: 'cancelled',

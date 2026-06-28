@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { BULK_PLANS, fmt } from "@/lib/pricing";
+import { BULK_PLANS, applyTransactionFee, fmt } from "@/lib/pricing";
 import GoldenGlow from "@/components/golden-glow";
 
 type Plan = (typeof BULK_PLANS)[number];
@@ -55,10 +55,11 @@ function BulkBookingForm() {
     if (txnFile && uploading) { setError("Screenshot is still uploading, please wait a moment."); return; }
     setLoading(true); setError("");
 
+    const { total } = applyTransactionFee(selected.discountedPrice);
     const res = await fetch("/api/bulk-bookings", {
       method: "POST", headers: { "Content-Type":"application/json" },
       body: JSON.stringify({ ...form, people_count: parseInt(form.people_count),
-        booking_type: selected.value, amount_paid: selected.discountedPrice,
+        booking_type: selected.value, amount_paid: total,
         start_date: form.start_date, end_date: endDate(form.start_date),
         txn_id: txnId || null, txn_screenshot_url: txnScreenshotUrl || null }),
     });
@@ -173,9 +174,17 @@ function BulkBookingForm() {
             </F>
 
             {/* Amount */}
-            <div style={{ padding:"14px 16px", background:"oklch(0.10 0.01 60)", border:"1px solid oklch(0.75 0.15 85 / 0.3)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <span style={{ fontFamily:"system-ui", fontSize:14, fontWeight:600, color:"oklch(0.88 0.02 85)" }}>Amount to Pay</span>
-              <span style={{ fontFamily:"system-ui", fontSize:22, fontWeight:700, color:"oklch(0.75 0.15 85)" }}>{fmt(selected.discountedPrice)}</span>
+            <div style={{ padding:"14px 16px", background:"oklch(0.10 0.01 60)", border:"1px solid oklch(0.75 0.15 85 / 0.3)" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", fontFamily:"system-ui", fontSize:13, color:"oklch(0.72 0.02 85)", marginBottom:6 }}>
+                <span>Plan price</span><span>{fmt(selected.discountedPrice)}</span>
+              </div>
+              <div style={{ display:"flex", justifyContent:"space-between", fontFamily:"system-ui", fontSize:13, color:"oklch(0.72 0.02 85)", marginBottom:10 }}>
+                <span>Payment processing fee (2%)</span><span>{fmt(applyTransactionFee(selected.discountedPrice).fee)}</span>
+              </div>
+              <div style={{ borderTop:"1px solid oklch(0.25 0.02 75)", paddingTop:10, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                <span style={{ fontFamily:"system-ui", fontSize:14, fontWeight:600, color:"oklch(0.88 0.02 85)" }}>Amount to Pay</span>
+                <span style={{ fontFamily:"system-ui", fontSize:22, fontWeight:700, color:"oklch(0.75 0.15 85)" }}>{fmt(applyTransactionFee(selected.discountedPrice).total)}</span>
+              </div>
             </div>
 
             {/* QR */}
@@ -187,7 +196,7 @@ function BulkBookingForm() {
               </div>
             </div>
             <p style={{ fontFamily:"system-ui", fontSize:13, color:"oklch(0.50 0.03 75)", textAlign:"center", letterSpacing:"0.04em" }}>
-              Scan QR · Pay {fmt(selected.discountedPrice)} · Share proof below
+              Scan QR · Pay {fmt(applyTransactionFee(selected.discountedPrice).total)} · Share proof below
             </p>
 
             <F label="Transaction ID / UTR Number">
