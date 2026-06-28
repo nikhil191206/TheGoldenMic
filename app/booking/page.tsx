@@ -3,9 +3,18 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Script from "next/script";
 import { hasConflict } from "@/lib/booking-utils";
 import { BOOKING_TYPES, DURATION_HOURS, calculatePrice, fmt } from "@/lib/pricing";
 import GoldenGlow from "@/components/golden-glow";
+
+const USE_RAZORPAY = process.env.NEXT_PUBLIC_PAYMENTS_PROVIDER === "razorpay";
+
+declare global {
+  interface Window {
+    Razorpay: new (options: Record<string, unknown>) => { open: () => void };
+  }
+}
 
 const TIME_SLOTS = (() => {
   const slots: string[] = [];
@@ -141,6 +150,46 @@ function BookingForm() {
     setUploading(false);
   };
 
+  const handleRazorpayPay = async () => {
+    setLoading(true); setPaymentError("");
+    const pricing = calculatePrice(form.booking_type, form.duration, Number(form.people_count));
+
+    const orderRes = await fetch("/api/razorpay/create-order", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: pricing.total }),
+    });
+    if (!orderRes.ok) {
+      setPaymentError((await orderRes.json()).error ?? "Could not start payment."); setLoading(false); return;
+    }
+    const order = await orderRes.json();
+
+    const rzp = new window.Razorpay({
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.orderId,
+      name: "The Golden Mic",
+      description: `${typeInfo?.label ?? "Studio"} booking — ${form.booking_date}`,
+      prefill: { name: form.name, email: form.email, contact: form.phone },
+      theme: { color: "#D4AF37" },
+      handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+        const verifyRes = await fetch("/api/razorpay/verify", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...response,
+            booking: { ...form, age: parseInt(form.age), people_count: parseInt(form.people_count), amount_paid: pricing.total },
+          }),
+        });
+        if (!verifyRes.ok) {
+          setPaymentError((await verifyRes.json()).error ?? "Payment verification failed."); setLoading(false); return;
+        }
+        setSuccess(true); setLoading(false);
+      },
+      modal: { ondismiss: () => setLoading(false) },
+    });
+    rzp.open();
+  };
+
   const handleConfirm = async () => {
     if (!txnId && !txnFile) { setPaymentError("Please enter a Transaction ID or upload a screenshot."); return; }
     if (txnFile && uploading) { setPaymentError("Screenshot is still uploading, please wait a moment."); return; }
@@ -177,6 +226,7 @@ function BookingForm() {
 
   return (
     <main className="min-h-screen w-full bg-background">
+      {USE_RAZORPAY && <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />}
       {/* Header */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border/30">
         <button onClick={() => step === 2 ? setStep(1) : undefined} style={{ background: "none", border: "none", padding: 0 }}>
@@ -393,7 +443,9 @@ function BookingForm() {
       {step === 2 && (
         <div className="max-w-lg mx-auto px-4 sm:px-6 py-8 pb-20">
           <h1 className="text-gold-gradient font-light tracking-[0.1em] text-center mb-2" style={{ fontSize:"clamp(1.8rem,7vw,2.6rem)" }}>Complete Payment</h1>
-          <p className="text-center text-muted-foreground mb-8" style={{ fontFamily:"system-ui", fontSize:14, letterSpacing:"0.08em" }}>Scan the QR to pay, then share your proof below</p>
+          <p className="text-center text-muted-foreground mb-8" style={{ fontFamily:"system-ui", fontSize:14, letterSpacing:"0.08em" }}>
+            {USE_RAZORPAY ? "Pay securely with Razorpay" : "Scan the QR to pay, then share your proof below"}
+          </p>
 
           <div className="flex flex-col gap-6">
             {/* Booking + Pricing Summary */}
@@ -429,49 +481,60 @@ function BookingForm() {
               </div>
             </div>
 
-            {/* QR Code */}
-            <div style={{ display:"flex", justifyContent:"center" }}>
-              <div style={{ padding:14, background:"#ffffff", border:"2px solid oklch(0.75 0.15 85)",
-                boxShadow:"0 0 0 1px oklch(0.75 0.15 85 / 0.15), 0 0 28px oklch(0.75 0.15 85 / 0.25)" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/payment_qr.jpeg" alt="Payment QR" style={{ width:200, height:200, display:"block", objectFit:"contain" }}/>
-              </div>
-            </div>
+            {USE_RAZORPAY ? (
+              <>
+                {paymentError && <Err>{paymentError}</Err>}
+                <GBtn onClick={handleRazorpayPay} disabled={loading} style={{ marginTop:8 }}>
+                  {loading ? "Opening Razorpay…" : `Pay ${fmt(pricing.total)} with Razorpay`}
+                </GBtn>
+              </>
+            ) : (
+              <>
+                {/* QR Code */}
+                <div style={{ display:"flex", justifyContent:"center" }}>
+                  <div style={{ padding:14, background:"#ffffff", border:"2px solid oklch(0.75 0.15 85)",
+                    boxShadow:"0 0 0 1px oklch(0.75 0.15 85 / 0.15), 0 0 28px oklch(0.75 0.15 85 / 0.25)" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/payment_qr.jpeg" alt="Payment QR" style={{ width:200, height:200, display:"block", objectFit:"contain" }}/>
+                  </div>
+                </div>
 
-            {/* TXN ID */}
-            <Field label="Transaction ID / UTR Number">
-              <input type="text" placeholder="Enter transaction ID after payment" value={txnId} onChange={e=>setTxnId(e.target.value)} style={IS}/>
-            </Field>
+                {/* TXN ID */}
+                <Field label="Transaction ID / UTR Number">
+                  <input type="text" placeholder="Enter transaction ID after payment" value={txnId} onChange={e=>setTxnId(e.target.value)} style={IS}/>
+                </Field>
 
-            <div style={{ display:"flex", alignItems:"center", gap:14 }}>
-              <div style={{ flex:1, height:1, background:"oklch(0.25 0.02 75)" }}/>
-              <span style={{ fontFamily:"system-ui", fontSize:12, letterSpacing:"0.15em", color:"oklch(0.45 0.03 75)", textTransform:"uppercase" }}>OR</span>
-              <div style={{ flex:1, height:1, background:"oklch(0.25 0.02 75)" }}/>
-            </div>
+                <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                  <div style={{ flex:1, height:1, background:"oklch(0.25 0.02 75)" }}/>
+                  <span style={{ fontFamily:"system-ui", fontSize:12, letterSpacing:"0.15em", color:"oklch(0.45 0.03 75)", textTransform:"uppercase" }}>OR</span>
+                  <div style={{ flex:1, height:1, background:"oklch(0.25 0.02 75)" }}/>
+                </div>
 
-            <div className="space-y-2">
-              <Label>Payment Screenshot</Label>
-              <label style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:"28px 16px",
-                border:txnFile?"1px solid oklch(0.75 0.15 85)":"1px dashed oklch(0.3 0.03 75)",
-                background:txnFile?"oklch(0.75 0.15 85 / 0.05)":"transparent", cursor:"pointer", transition:"all 0.25s" }}>
-                <input type="file" accept="image/*" className="sr-only" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleFileSelect(f); }}/>
-                {uploading
-                  ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.65 0.10 85)" }}>Uploading…</span>
-                  : txnFile && txnScreenshotUrl
-                  ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.75 0.15 85)" }}>✓ {txnFile.name}</span>
-                  : <>
-                      <svg style={{ width:28, height:28, color:"oklch(0.45 0.03 75)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                      <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.55 0.03 75)" }}>Upload payment screenshot</span>
-                      <span style={{ fontFamily:"system-ui", fontSize:11, color:"oklch(0.40 0.02 75)" }}>PNG, JPG — max 5 MB</span>
-                    </>
-                }
-              </label>
-            </div>
+                <div className="space-y-2">
+                  <Label>Payment Screenshot</Label>
+                  <label style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8, padding:"28px 16px",
+                    border:txnFile?"1px solid oklch(0.75 0.15 85)":"1px dashed oklch(0.3 0.03 75)",
+                    background:txnFile?"oklch(0.75 0.15 85 / 0.05)":"transparent", cursor:"pointer", transition:"all 0.25s" }}>
+                    <input type="file" accept="image/*" className="sr-only" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleFileSelect(f); }}/>
+                    {uploading
+                      ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.65 0.10 85)" }}>Uploading…</span>
+                      : txnFile && txnScreenshotUrl
+                      ? <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.75 0.15 85)" }}>✓ {txnFile.name}</span>
+                      : <>
+                          <svg style={{ width:28, height:28, color:"oklch(0.45 0.03 75)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                          <span style={{ fontFamily:"system-ui", fontSize:14, color:"oklch(0.55 0.03 75)" }}>Upload payment screenshot</span>
+                          <span style={{ fontFamily:"system-ui", fontSize:11, color:"oklch(0.40 0.02 75)" }}>PNG, JPG — max 5 MB</span>
+                        </>
+                    }
+                  </label>
+                </div>
 
-            {paymentError && <Err>{paymentError}</Err>}
-            <GBtn onClick={handleConfirm} disabled={loading || uploading} style={{ marginTop:8 }}>
-              {loading ? "Confirming…" : uploading ? "Uploading screenshot…" : "Confirm Booking"}
-            </GBtn>
+                {paymentError && <Err>{paymentError}</Err>}
+                <GBtn onClick={handleConfirm} disabled={loading || uploading} style={{ marginTop:8 }}>
+                  {loading ? "Confirming…" : uploading ? "Uploading screenshot…" : "Confirm Booking"}
+                </GBtn>
+              </>
+            )}
           </div>
         </div>
       )}
